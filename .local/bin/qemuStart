@@ -1,0 +1,27 @@
+#!/bin/bash
+
+if [ "$1" == "-l" ] || [ "$1" == "--list" ]; then
+    echo "Available VMs:"
+
+    VMS=$(bash -c "ls -l ~/qemu" | cut -d ' ' -f 9 -s)
+
+    for vm in $VMS;
+    do
+        if [ -x $HOME/qemu/$vm/start ]; then
+            echo -e "\t$vm"
+        fi
+    done
+    exit 2
+elif [ -z $1 ]; then
+    echo "Usage: qemuStart (VM_NAME | -l | --list)" >&2
+    exit 1
+fi
+
+ROOT_DIR="$HOME/qemu/$1"
+
+if [ -x "$ROOT_DIR/start" ]; then
+    cd $ROOT_DIR
+    bash -c "./start &" 
+else
+    echo "'$ROOT_DIR/start': no such file and/or directory" >&2
+fi

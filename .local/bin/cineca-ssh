@@ -1,0 +1,4 @@
+step ssh login 'manuel.diagostino@studenti.unipr.it' --provisioner cineca-hpc
+ssh-keygen -R login.leonardo.cineca.it
+ssh mdiagost@login.leonardo.cineca.it 
+
