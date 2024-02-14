@@ -80,6 +80,7 @@ ZSH_THEME="robbyrussell"
 plugins=(
 	git
 	docker
+  zsh-autosuggestions
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -123,6 +124,10 @@ alias ll='exa -lhgH --icons'
 alias la='ll -a'
 alias tree='exa -T --icons'
 
-alias uni='cd ~/Documenti/UNI/23_24/'
+alias uni='cd ~/university'
 alias open='xdg-open'
 alias sshuni='ssh manuel.diagostino@studenti.unipr.it@didattica-linux.unipr.it'
+
+alias vim=nvim
+source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
