@@ -80,6 +80,7 @@ ZSH_THEME="robbyrussell"
 plugins=(
 	git
 	docker
+  docker-compose
   zsh-autosuggestions
 )
 
@@ -131,3 +132,8 @@ alias sshuni='ssh manuel.diagostino@studenti.unipr.it@didattica-linux.unipr.it'
 alias vim=nvim
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
+# docker
+alias dkrm='export CONT_ALL=$(docker ps -aq) ; docker kill "$CONT_ALL" ; docker rm -f "$CONT_ALL"'
+
+# dot-net
+export PATH=$PATH:~/.dotnet/tools
