@@ -13,5 +13,12 @@ sudo pacman -S\
   neovim \
   cliphist \
   dunst \
+  wofi \
+  java \
+  npm \
+  nodejs \
+  zathura zathura-pdf-poppler \
+  okular \
+  biber
   
 ```
