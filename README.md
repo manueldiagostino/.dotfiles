@@ -7,3 +7,11 @@ cd .dotfiles
 stow .
 ```
 
+## Dipendenze
+```bash
+sudo pacman -S\
+  neovim \
+  cliphist \
+  dunst \
+  
+```
