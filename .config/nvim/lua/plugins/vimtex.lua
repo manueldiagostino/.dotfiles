@@ -1,3 +1,5 @@
+local wk = require("which-key")
+
 return {
   "lervag/vimtex",
   init = function()
@@ -20,4 +22,15 @@ return {
     -- vim.g["vimtex_compiler_method"] = "latexrun"
     -- vim.g["vimtex_view_general_options"] = "--unique file:@pdf#src:@line@tex"
   end,
+
+  wk.register({
+    ["<leader>"] = {
+      t = {
+        name = "+Vimtex", --- group name
+        c = { "<cmd>VimtexCompile<CR>", "compile" },
+        v = { "<cmd>VimtexView<CR>", "view" },
+        r = { "<cmd>:VimtexClearCache All<CR>", "reset vimtex" },
+      },
+    },
+  }),
 }
