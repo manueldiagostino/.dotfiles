@@ -1,6 +1,12 @@
 return {
   "nvim-neo-tree/neo-tree.nvim",
   opts = {
+    window = {
+      mappings = {
+        ["-"] = "open_split",
+        ["|"] = "open_vsplit",
+      },
+    },
     filesystem = {
       filtered_items = {
         visible = true,

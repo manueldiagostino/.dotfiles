@@ -9,8 +9,9 @@ return {
       ensure_installed = {
         "clangd",
         "jdtls",
-        "ltex-ls",
+        "texlab",
         "pyre",
+        "marksman",
       },
     },
   },
