@@ -19,5 +19,6 @@ sudo pacman -S \
   zathura zathura-pdf-poppler \ # vimtex pdf viewer
   okular \ # pdf reader
   texlive biber texlive-lang \ # LaTeX stuff
+  qt5ct
   
 ```
