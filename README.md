@@ -19,6 +19,6 @@ sudo pacman -S\
   nodejs \
   zathura zathura-pdf-poppler \
   okular \
-  biber
+  biber \
   
 ```
