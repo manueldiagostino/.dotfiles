@@ -26,10 +26,15 @@ return {
   wk.register({
     ["<leader>"] = {
       t = {
-        name = "+Vimtex", --- group name
+        name = "+VimTeX", --- group name
         c = { "<cmd>VimtexCompile<CR>", "compile" },
+        e = { "<cmd>VimtexErrors<CR>", "see errors" },
+        t = { "<cmd>VimtexTocOpen<CR>", "open TOC" },
+        g = { "<cmd>VimtexTocOpen<CR>", "toggle TOC" },
         v = { "<cmd>VimtexView<CR>", "view" },
         r = { "<cmd>:VimtexClearCache All<CR>", "reset vimtex" },
+        s = { "<cmd>:VimtexStop<CR>", "stop VimTeX" },
+        a = { "<cmd>:VimtexStopAll<CR>", "stop all VimTeX" },
       },
     },
   }),
