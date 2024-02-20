@@ -15,6 +15,7 @@ Theme and icons have to be set manually with `qt5ct`.
 
 ```bash
 sudo pacman -S \
+alacritty \
 vi neovim \
 cliphist \
 dunst \
@@ -23,6 +24,7 @@ jre-openjdk jdk-openjdk npm nodejs \
 zathura zathura-pdf-poppler \
 okular \
 texlive biber texlive-lang \
-kvantum qt5ct
+kvantum qt5ct \
+
   
 ```
