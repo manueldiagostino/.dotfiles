@@ -25,7 +25,7 @@ zathura zathura-pdf-poppler \
 okular \
 texlive biber texlive-lang \
 kvantum qt5ct \
-brightnessctl
+awk brightnessctl pamixer
 
   
 
