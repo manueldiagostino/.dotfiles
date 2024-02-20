@@ -25,6 +25,12 @@ zathura zathura-pdf-poppler \
 okular \
 texlive biber texlive-lang \
 kvantum qt5ct \
+brightnessctl
 
   
+
+```bash
+yay -S \
+wluma
+```
 ```
