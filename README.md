@@ -26,7 +26,9 @@ zathura zathura-pdf-poppler \
 okular \
 texlive biber texlive-lang \
 kvantum qt5ct \
-awk brightnessctl pamixer
+awk brightnessctl pamixer \
+cmake hyprlang hyprpaper \
+hypridle hyprlock
 
 # optional
 yay -S \
@@ -54,6 +56,15 @@ export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
 ```
 
 ## Awesome font
+```bash
+sudo pacman -S otf-font-awesome
+```
+
+## [Idle management](https://github.com/hyprwm/hypridle)
+`# TODO:` 
+
+
+## Lock screen
 ```bash
 sudo pacman -S otf-font-awesome
 ```
