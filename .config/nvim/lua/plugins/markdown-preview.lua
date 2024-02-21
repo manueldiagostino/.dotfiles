@@ -12,15 +12,10 @@ return {
     ["<leader>"] = {
       m = {
         name = "+MarkdownPreview", --- group name
-        m = { "<cmd>MarkdownPreview<cr>", desc = "MarkdownPreview" },
-        s = { "<cmd>MarkdownPreviewStop<cr>", desc = "MarkdownPreviewStop" },
-        t = { "<cmd>MarkdownPreviewToggle<cr>", desc = "MarkdownPreviewToggle" },
+        v = { "<cmd>MarkdownPreview<cr>", "MarkdownPreview" },
+        s = { "<cmd>MarkdownPreviewStop<cr>", "MarkdownPreviewStop" },
+        t = { "<cmd>MarkdownPreviewToggle<cr>", "MarkdownPreviewToggle" },
       },
     },
   }),
-  keys = {
-    { "<leader>mm", "<cmd>MarkdownPreview<cr>", desc = "MarkdownPreview" },
-    { "<leader>ms", "<cmd>MarkdownPreviewStop<cr>", desc = "MarkdownPreviewStop" },
-    { "<leader>mt", "<cmd>MarkdownPreviewToggle<cr>", desc = "MarkdownPreviewToggle" },
-  },
 }

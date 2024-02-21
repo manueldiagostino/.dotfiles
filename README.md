@@ -33,7 +33,6 @@ yay -S \
 wluma
 ```
 
-
 ## [SDDM](https://wiki.archlinux.org/title/SDDM)
 Insert this lines into `/etc/sddm.conf.d/default.conf`:
 ```bash
@@ -52,4 +51,9 @@ The following is already given in `.zshrc`:
 ```bash
 # ssh-agent
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+```
+
+## Awesome font
+```bash
+sudo pacman -S otf-font-awesome
 ```
