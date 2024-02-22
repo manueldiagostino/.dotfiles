@@ -17,7 +17,4 @@ alias ll='exa -lhgH --icons'
 alias la='exa -lahgH --icons'
 alias tree='exa -T --icons'
 
-# dot-net
-# export DOTNET_ROOT=$(pwd)/.dotnet
-# export PATH=$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools
-export PATH=$PATH:~/.dotnet/tools
+export PATH=$PATH:~/.local/bin/

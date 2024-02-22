@@ -32,7 +32,9 @@ hypridle hyprlock
 
 # optional
 yay -S \
-wluma
+wluma \
+wayshot \
+imv
 ```
 
 ## [SDDM](https://wiki.archlinux.org/title/SDDM)
