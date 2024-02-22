@@ -17,4 +17,4 @@ alias ll='exa -lhgH --icons'
 alias la='exa -lahgH --icons'
 alias tree='exa -T --icons'
 
-export PATH=$PATH:~/.local/bin/
+export PATH=$PATH:~/.local/bin

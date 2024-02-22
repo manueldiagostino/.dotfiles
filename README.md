@@ -28,13 +28,13 @@ texlive biber texlive-lang \
 kvantum qt5ct \
 awk brightnessctl pamixer \
 cmake hyprlang hyprpaper \
-hypridle hyprlock
+hypridle hyprlock \
+slurp jq imv
 
 # optional
 yay -S \
 wluma \
-wayshot \
-imv
+wayshot
 ```
 
 ## [SDDM](https://wiki.archlinux.org/title/SDDM)

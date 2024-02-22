@@ -135,4 +135,4 @@ source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 # docker
 alias dkrm='export CONT_ALL=$(docker ps -aq) ; docker kill "$CONT_ALL" ; docker rm -f "$CONT_ALL"'
 
-export PATH=$PATH:~/.local/bin/
+export PATH=$PATH:~/.local/bin
