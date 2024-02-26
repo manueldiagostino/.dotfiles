@@ -1,0 +1,4 @@
+include ./catppuccin-macchiato
+
+set selection-clipboard clipboard
+
