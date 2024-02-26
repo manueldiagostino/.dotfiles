@@ -8,6 +8,8 @@ monitor_name=$(echo $monitors_json | jq --argjson num "$monitor_num" '.[$num].na
 # monitor_name=$(echo $monitor_name | sed s/\"//g)
 
 coordinates=$(slurp)
+[[ ! -n "$coordinates" ]] && exit 1
+
 echo $monitor_name
 echo $coordinates
 
@@ -17,4 +19,4 @@ newfile_path="$HOME/Immagini/Screenshot/$(date '+%y%m%d_%Hh%Mm%Ss').png"
 wayshot -f $newfile_path -s "$coordinates"
 imv $newfile_path &
 dunstify -a "screenshot" -h string:x-dunst:screen "Screenshot saved"
-wl-copy -t image/png < $newfile_path
+wl-copy -t image/png <$newfile_path
