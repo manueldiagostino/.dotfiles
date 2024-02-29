@@ -1,8 +1,8 @@
 #!/bin/bash
 
 swayidle -w \
-	timeout 900 '~/.config/hypr/lock.sh' \
-	timeout 1200 '
+	timeout 300 '~/.config/hypr/lock.sh' \
+	timeout 600 '
         hyprctl dispatch dpms off eDP-1
         hyprctl monitors | grep HDMI
         ret=$?

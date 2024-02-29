@@ -29,12 +29,14 @@ kvantum qt5ct \
 awk brightnessctl pamixer \
 cmake hyprlang hyprpaper \
 hypridle hyprlock \
-slurp jq imv
+slurp jq imv \
+ttf-font-awesome
 
 # optional
 yay -S \
 wluma \
-wayshot
+wayshot \
+eww
 ```
 
 ## [SDDM](https://wiki.archlinux.org/title/SDDM)

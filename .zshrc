@@ -126,6 +126,7 @@ alias la='ll -a'
 alias tree='exa -T --icons'
 
 alias uni='cd ~/university'
+alias tesi='cd ~/university/git/tesi'
 alias open='xdg-open'
 alias sshuni='ssh manuel.diagostino@studenti.unipr.it@didattica-linux.unipr.it'
 
@@ -135,7 +136,7 @@ source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 # docker
 alias dkrm='export CONT_ALL=$(docker ps -aq) ; docker kill "$CONT_ALL" ; docker rm -f "$CONT_ALL"'
 
-export PATH=$PATH:~/.local/bin
+export PATH=~/.local/bin:/usr/local/texlive/2023/bin/x86_64-linux/:$PATH
 
 # latex packages
-alias tlmgr='/usr/share/texmf-dist/scripts/texlive/tlmgr.pl --usermode'
+# alias tlmgr='/usr/share/texmf-dist/scripts/texlive/tlmgr.pl --usermode'
