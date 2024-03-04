@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cmd="kwallet-query -f ENV_VARIABLES kdewallet -r unipr_usr 2>/dev/null"
+echo $(kwallet-query -f ENV_VARIABLES kdewallet -r $1 2>/dev/null)

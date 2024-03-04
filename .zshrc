@@ -128,7 +128,8 @@ alias tree='exa -T --icons'
 alias uni='cd ~/university'
 alias tesi='cd ~/university/git/tesi'
 alias open='xdg-open'
-alias sshuni='ssh manuel.diagostino@studenti.unipr.it@didattica-linux.unipr.it'
+alias sshuni='ssh $(get_env unipr_usr)'
+alias vpnuni='sudo openfortivpn connect.unipr.it:4443 --username=$(get_env unipr_email)'
 
 alias vim=nvim
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
