@@ -5,6 +5,7 @@ local keymap = vim.api.nvim_set_keymap
 keymap("v", "<A-j>", ":m .+1<CR>==", opts)
 keymap("v", "<A-k>", ":m .-2<CR>==", opts)
 keymap("v", "p", '"_dP', opts)
+keymap("v", "d", '"_dP', opts)
 
 -- Visual Block --
 -- Move text up and down

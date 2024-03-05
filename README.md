@@ -30,7 +30,8 @@ awk brightnessctl pamixer \
 cmake hyprlang hyprpaper \
 hypridle hyprlock \
 slurp jq imv \
-ttf-font-awesome
+ttf-font-awesome \
+zoxide 
 
 # optional
 yay -S \

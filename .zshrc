@@ -129,7 +129,8 @@ alias uni='cd ~/university'
 alias tesi='cd ~/university/git/tesi'
 alias open='xdg-open'
 alias sshuni='ssh $(get_env unipr_usr)'
-alias vpnuni='sudo openfortivpn connect.unipr.it:4443 --username=$(get_env unipr_email)'
+alias sshpc='ssh $(get_env unipr_hpc)'
+alias vpnuni='sudo openfortivpn connect.unipr.it:4443 --username="$(get_env unipr_email)" --password="$(get_env unipr_psw)"'
 
 alias vim=nvim
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
@@ -139,5 +140,4 @@ alias dkrm='export CONT_ALL=$(docker ps -aq) ; docker kill "$CONT_ALL" ; docker 
 
 export PATH=~/.local/bin:/usr/local/texlive/2023/bin/x86_64-linux/:$PATH
 
-# latex packages
-# alias tlmgr='/usr/share/texmf-dist/scripts/texlive/tlmgr.pl --usermode'
+eval "$(zoxide init zsh)"
