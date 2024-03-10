@@ -140,4 +140,7 @@ alias dkrm='export CONT_ALL=$(docker ps -aq) ; docker kill "$CONT_ALL" ; docker 
 
 export PATH=~/.local/bin:/usr/local/texlive/2023/bin/x86_64-linux/:$PATH
 
+# zoxide
 eval "$(zoxide init zsh)"
+alias cd='z'
+

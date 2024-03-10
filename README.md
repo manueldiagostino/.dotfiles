@@ -72,4 +72,9 @@ sudo pacman -S otf-font-awesome
 ## Lock screen
 ```bash
 sudo pacman -S otf-font-awesome
+
 ```
+
+
+## TODO
+- [ ] copiare screenshots negli appunti
