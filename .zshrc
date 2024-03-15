@@ -129,7 +129,7 @@ alias uni='cd ~/university'
 alias tesi='cd ~/university/git/tesi'
 alias open='xdg-open'
 alias sshuni='ssh $(get_env unipr_usr)'
-alias sshpc='ssh $(get_env unipr_hpc)'
+alias sshpc='ssh -X $(get_env unipr_hpc)'
 alias vpnuni='sudo openfortivpn connect.unipr.it:4443 --username="$(get_env unipr_email)" --password="$(get_env unipr_psw)"'
 
 alias vim=nvim
