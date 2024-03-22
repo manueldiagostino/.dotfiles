@@ -129,8 +129,8 @@ alias uni='cd ~/university'
 alias tesi='cd ~/university/git/tesi'
 alias open='xdg-open'
 alias sshuni='ssh $(get_env unipr_usr)'
-alias sshpc='ssh -X $(get_env unipr_hpc)'
-alias vpnuni='sudo openfortivpn connect.unipr.it:4443 --username="$(get_env unipr_email)" --password="$(get_env unipr_psw)"'
+alias sshpc='ssh -XY $(get_env unipr_hpc)'
+alias vpnuni='export U="$(get_env unipr_email)" ; export P="$(get_env unipr_psw)" ; sudo openfortivpn connect.unipr.it:4443 --username="$U" --password="$P"'
 
 alias vim=nvim
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
