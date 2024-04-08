@@ -138,7 +138,7 @@ source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 # docker
 alias dkrm='export CONT_ALL=$(docker ps -aq) ; docker kill "$CONT_ALL" ; docker rm -f "$CONT_ALL"'
 
-export PATH=~/.local/bin:/usr/local/texlive/2023/bin/x86_64-linux/:$PATH
+export PATH=~/.local/bin:/usr/local/texlive/2024/bin/x86_64-linux/:$PATH
 
 # zoxide
 eval "$(zoxide init zsh)"
