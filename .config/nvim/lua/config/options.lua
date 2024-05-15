@@ -11,6 +11,6 @@ set.wrap = true
 set.tabstop = 2
 set.shiftwidth = 2
 set.softtabstop = 2
-set.expandtab = true
+set.expandtab = false
 
-set.relativenumber = false
+set.relativenumber = true
