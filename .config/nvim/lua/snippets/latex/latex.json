@@ -1,0 +1,8 @@
+{
+	"textbf": {
+		"prefix": "bf",
+		"body": [
+			"\\textbf{$0}"
+		]
+	}
+}

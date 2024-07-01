@@ -132,6 +132,10 @@ alias sshuni='ssh $(get_env unipr_usr)'
 alias sshpc='ssh -XY $(get_env unipr_hpc)'
 alias vpnuni='export U="$(get_env unipr_email)" ; export P="$(get_env unipr_psw)" ; sudo openfortivpn connect.unipr.it:4443 --username="$U" --password="$P"'
 
+HPC_FOLDER='/home/manuel/university/23_24/hpc/'
+alias r_send_hpc='rsync -avzP -e ssh "$HPC_FOLDER" "$(get_env unipr_hpc)":"$(get_env unipr_hpc_home)"'
+alias r_recv_hpc='rsync -avzP -e ssh "$(get_env unipr_hpc)":"$(get_env unipr_hpc_home)" "$HPC_FOLDER"'
+
 alias vim=nvim
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
