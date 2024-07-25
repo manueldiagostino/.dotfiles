@@ -25,19 +25,15 @@ return {
     -- vim.g["vimtex_view_general_options"] = "--unique file:@pdf#src:@line@tex"
   end,
 
-  wk.register({
-    ["<leader>"] = {
-      t = {
-        name = "+VimTeX", --- group name
-        c = { "<cmd>VimtexCompile<CR>", "compile" },
-        e = { "<cmd>VimtexErrors<CR>", "see errors" },
-        t = { "<cmd>VimtexTocOpen<CR>", "open TOC" },
-        g = { "<cmd>VimtexTocOpen<CR>", "toggle TOC" },
-        v = { "<cmd>VimtexView<CR>", "view" },
-        r = { "<cmd>:VimtexClearCache All<CR>", "reset vimtex" },
-        s = { "<cmd>:VimtexStop<CR>", "stop VimTeX" },
-        a = { "<cmd>:VimtexStopAll<CR>", "stop all VimTeX" },
-      },
-    },
+  wk.add({
+    { "<leader>t", group = "VimTeX" },
+    { "<leader>ta", "<cmd>:VimtexStopAll<CR>", desc = "stop all VimTeX" },
+    { "<leader>tc", "<cmd>VimtexCompile<CR>", desc = "compile" },
+    { "<leader>te", "<cmd>VimtexErrors<CR>", desc = "see errors" },
+    { "<leader>tg", "<cmd>VimtexTocOpen<CR>", desc = "toggle TOC" },
+    { "<leader>tr", "<cmd>:VimtexClearCache All<CR>", desc = "reset vimtex" },
+    { "<leader>ts", "<cmd>:VimtexStop<CR>", desc = "stop VimTeX" },
+    { "<leader>tt", "<cmd>VimtexTocOpen<CR>", desc = "open TOC" },
+    { "<leader>tv", "<cmd>VimtexView<CR>", desc = "view" },
   }),
 }

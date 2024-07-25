@@ -1,0 +1,280 @@
+(defvar eww "`which eww` -c $HOME/.config/eww/bar/")
+(defvar slideDuration "300ms")
+
+(defwindow bar
+  :monitor 0
+  :geometry (geometry
+    :x "8px"
+    :y "0px"
+    :width "44px"
+    :height "85%"
+    :anchor "center left")
+  :stacking "fg"
+  :exclusive "true"
+  :hexpand "false"
+	:vexpand "false"
+  (bar)
+)
+
+(defwidget bar []
+  (centerbox
+    :class "bar"
+    :orientation "v"
+    (topBox)
+    (middleBox)
+    (bottomBox)
+  )
+)
+
+(defwidget topBox []
+  (box
+    :class "topBox"
+    :orientation "v"
+    :space-evenly false
+    (controlPanel)
+  )
+)
+
+(defpoll time 
+    :interval "5s"
+    :initial `date +'{"hour":"%H","min":"%M"}'`
+    `date +'{"hour":"%H","min":"%M"}'`
+)
+
+(defwidget middleBox []
+  (box
+    :class "middleBox"
+    :orientation "v"
+    :halign "center"
+    :space-evenly false
+    (label
+      :class "hour"
+      ; :onclick "scripts/popup.sh calendar"
+      :orientation "v"
+      :text "${time.hour}"
+    )
+    (label
+      :class "min"
+      :orientation "v"
+      :text "${time.min}"
+    )
+  )
+)
+
+(defwidget bottomBox []
+  (box
+    :class "bottomBox"
+    :orientation "v"
+    :valign "end"
+    :space-evenly false
+    (workspaces)
+    (powerMenu)
+  )
+)
+
+
+; ┌─────────────────────────────────────────────────────────────────────────────────────┐
+; │                                                                                     │
+; │                                                                                     │
+; │  ██████╗  ██████╗ ██╗    ██╗███████╗██████╗ ███╗   ███╗███████╗███╗   ██╗██╗   ██╗  │
+; │  ██╔══██╗██╔═══██╗██║    ██║██╔════╝██╔══██╗████╗ ████║██╔════╝████╗  ██║██║   ██║  │
+; │  ██████╔╝██║   ██║██║ █╗ ██║█████╗  ██████╔╝██╔████╔██║█████╗  ██╔██╗ ██║██║   ██║  │
+; │  ██╔═══╝ ██║   ██║██║███╗██║██╔══╝  ██╔══██╗██║╚██╔╝██║██╔══╝  ██║╚██╗██║██║   ██║  │
+; │  ██║     ╚██████╔╝╚███╔███╔╝███████╗██║  ██║██║ ╚═╝ ██║███████╗██║ ╚████║╚██████╔╝  │
+; │  ╚═╝      ╚═════╝  ╚══╝╚══╝ ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝ ╚═════╝   │
+; │                                                                                     │
+; │                                                                                     │
+; └─────────────────────────────────────────────────────────────────────────────────────┘
+
+(defvar power false) ; activates the revealer
+
+(defwidget powerMenu []
+  (eventbox
+    :onhover "${eww} update power=true"
+    :onhoverlost "${eww} update power=false"
+    (box
+      :class "powerMenu"
+      :orientation "v"
+      :space-evenly "false"
+      (revealer
+        :class "powerMenu-revealer"
+        :transition "slideup"
+        :reveal power
+        :duration "${slideDuration}"
+        (powerButtons)
+      )
+      (image
+        :class "image-logo"
+        :path "./images/catppuccin-logo.png"
+        :image-width 36
+        :image-height 36
+      )
+    )
+  )
+)
+
+(defwidget powerButtons []
+  (box
+    :class "powerButtons"
+    :orientation "v"
+    :space-evenly "true"
+    (button ; reboot
+      :class "button-reboot"
+      :tooltip "Reboot"
+      :onclick "systemctl reboot"
+      ""
+    )
+    (button ; suspend
+      :class "button-suspend"
+      :tooltip "Suspend"
+      :onclick "sleep 2 && ~/.config/hypr/scripts/lock.sh && systemctl suspend 1>&2 &2>>/home/manuel/tmp/log.txt"
+      ""
+    )
+    (button ; logout
+      :class "button-logout"
+      :tooltip "Log-out"
+      :onclick "hyprctl dispatch exit"
+      ""
+    )
+    (button ; lock
+      :class "button-lock"
+      :tooltip "Lock the screen"
+      :onclick "~/.config/hypr/scripts/lock.sh"
+      ""
+    )
+    (button
+      :class "button-off"
+      :tooltip "Shutdown"
+      :onclick "shutdown now"
+      ""
+    )
+  )
+)
+
+
+
+; ┌───────────────────────────────────────────────────────────────────────────────────────┐
+; │                                                                                       │
+; │                                                                                       │
+; │  ██╗    ██╗ ██████╗ ██████╗ ██╗  ██╗███████╗██████╗  █████╗  ██████╗███████╗███████╗  │
+; │  ██║    ██║██╔═══██╗██╔══██╗██║ ██╔╝██╔════╝██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝  │
+; │  ██║ █╗ ██║██║   ██║██████╔╝█████╔╝ ███████╗██████╔╝███████║██║     █████╗  ███████╗  │
+; │  ██║███╗██║██║   ██║██╔══██╗██╔═██╗ ╚════██║██╔═══╝ ██╔══██║██║     ██╔══╝  ╚════██║  │
+; │  ╚███╔███╔╝╚██████╔╝██║  ██║██║  ██╗███████║██║     ██║  ██║╚██████╗███████╗███████║  │
+; │   ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝     ╚═╝  ╚═╝ ╚═════╝╚══════╝╚══════╝  │
+; │                                                                                       │
+; │                                                                                       │
+; └───────────────────────────────────────────────────────────────────────────────────────┘
+
+(deflisten workspaces-listener :initial "" `tail -F $HOME/.cache/eww-workspaces.lock`)
+(defpoll workspaces-json :interval "0.5s" "scripts/workspaces.sh write-json")
+(defwidget workspaces []
+  (workspacesList)
+)
+
+(defwidget workspacesList []
+  (box
+    :class "workspacesList"
+    :orientation "v"
+    :space-evenly true
+    (for entry in "${workspaces-listener}"
+      (button
+        :onclick "hyprctl dispatch workspace ${entry['id']}"
+        :class "${entry['class']}"
+        "${entry['id']}"
+      )
+    )
+  )
+)
+
+
+; ┌─────────────────────────────────────────────────────────────────────────┐
+; │                                                                         │
+; │                                                                         │
+; │   ██████╗ ██████╗ ███╗   ██╗████████╗██████╗  ██████╗ ██╗     ███████╗  │
+; │  ██╔════╝██╔═══██╗████╗  ██║╚══██╔══╝██╔══██╗██╔═══██╗██║     ██╔════╝  │
+; │  ██║     ██║   ██║██╔██╗ ██║   ██║   ██████╔╝██║   ██║██║     ███████╗  │
+; │  ██║     ██║   ██║██║╚██╗██║   ██║   ██╔══██╗██║   ██║██║     ╚════██║  │
+; │  ╚██████╗╚██████╔╝██║ ╚████║   ██║   ██║  ██║╚██████╔╝███████╗███████║  │
+; │   ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚══════╝  │
+; │                                                                         │
+; │                                                                         │
+; └─────────────────────────────────────────────────────────────────────────┘
+
+(defwidget controlPanel []
+  (box
+    :orientation "v"
+    :space-evenly false
+    :class "controlPanel"
+    ; (volumeWidget)
+    ; (micWidget)
+    ; (wifiWidget)
+    (brightnessWidget)
+    ; (bluetoothWidget)
+    (batteryWidget)
+  )
+)
+
+(defvar brightness false)
+(defpoll currBrightness :interval "0.5s" "scripts/brightness.sh get")
+(deflisten brightnessIcon :initial "" `tail -F ./tmp/gamma`)
+
+(defwidget brightnessWidget []
+  (eventbox
+    :onhover "${eww} update brightness=true"
+    :onhoverlost "${eww} update brightness=false"
+    (box
+      :class "brightnessBox"
+      :orientation "v"
+      :space-evenly false
+      (button
+        :class "button-brightness"
+        :onclick "scripts/gamma.sh set"
+        ""
+      )
+      (revealer
+        :transition "slidedown"
+        :reveal brightness
+        :duration "${slideDuration}"
+        (scale
+          :class "scale-brightness"
+          :orientation "v"
+          :tooltip "Brightness ${currBrightness}%"
+          :max 101
+          :value "${currBrightness}"
+          :min 20
+          :onchange "scripts/brightness.sh set {}"
+          :flipped true
+          :height 100
+          :width 10
+        )
+      )
+    )
+  )
+)
+
+
+(defpoll batteryIcon :interval "5s" "scripts/battery.sh icon")
+(defpoll batteryValue :interval "5s" "scripts/battery.sh percent")
+(defpoll batteryButton :interval "5s" "scripts/battery.sh button_style")
+(defpoll batteryLabel :interval "5s" "scripts/battery.sh label_style")
+
+(defwidget batteryWidget []
+    (box
+        :class "batteryBox"
+        :orientation "v"
+        :space-evenly false
+        (button
+            :class "button-battery"
+            :onclick " "
+            :style "${batteryButton}"
+            batteryIcon
+        )
+        (label
+            :class "label-battery"
+            :orientation "v"
+            :style "${batteryLabel}"
+            :text "${batteryValue}%"
+        )
+    )
+)

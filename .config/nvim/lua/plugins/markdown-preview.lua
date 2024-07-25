@@ -9,14 +9,10 @@ return {
     vim.fn["mkdp#util#install"]()
   end,
 
-  wk.register({
-    ["<leader>"] = {
-      m = {
-        name = "+MarkdownPreview", --- group name
-        v = { "<cmd>MarkdownPreview<cr>", "MarkdownPreview" },
-        s = { "<cmd>MarkdownPreviewStop<cr>", "MarkdownPreviewStop" },
-        t = { "<cmd>MarkdownPreviewToggle<cr>", "MarkdownPreviewToggle" },
-      },
-    },
+  wk.add({
+    { "<leader>m", group = "MarkdownPreview", icon = "" },
+    { "<leader>ms", "<cmd>MarkdownPreviewStop<cr>", desc = "MarkdownPreviewStop", icon = "" },
+    { "<leader>mt", "<cmd>MarkdownPreviewToggle<cr>", desc = "MarkdownPreviewToggle", icon = "" },
+    { "<leader>mv", "<cmd>MarkdownPreview<cr>", desc = "MarkdownPreview", icon = "" },
   }),
 }
