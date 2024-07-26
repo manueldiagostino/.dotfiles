@@ -35,9 +35,8 @@
   )
 )
 
-(defpoll time 
+(defpoll time
     :interval "5s"
-    :initial `date +'{"hour":"%H","min":"%M"}'`
     `date +'{"hour":"%H","min":"%M"}'`
 )
 
@@ -49,13 +48,10 @@
     :space-evenly false
     (label
       :class "hour"
-      ; :onclick "scripts/popup.sh calendar"
-      :orientation "v"
       :text "${time.hour}"
     )
     (label
       :class "min"
-      :orientation "v"
       :text "${time.min}"
     )
   )
@@ -166,8 +162,12 @@
 ; │                                                                                       │
 ; └───────────────────────────────────────────────────────────────────────────────────────┘
 
-(deflisten workspaces-listener :initial "" `tail -F $HOME/.cache/eww-workspaces.lock`)
-(defpoll workspaces-json :interval "0.5s" "scripts/workspaces.sh write-json")
+(deflisten workspaces-listener
+  :initial '[{"id":1,"class":"button-workspace-active"},{"id":2,"class":"button-workspace"},{"id":3,"class":"button-workspace"}]'
+  `tail -F $HOME/.cache/eww-workspaces.lock`)
+(defpoll workspacesJson
+  :interval "0.5s"
+  `./scripts/workspaces.sh write-json`)
 (defwidget workspaces []
   (workspacesList)
 )
@@ -177,11 +177,11 @@
     :class "workspacesList"
     :orientation "v"
     :space-evenly true
-    (for entry in "${workspaces-listener}"
+    (for entry in workspaces-listener
       (button
         :onclick "hyprctl dispatch workspace ${entry['id']}"
         :class "${entry['class']}"
-        "${entry['id']}"
+        "${entry['id']}${workspacesJson}" ; the var 'workspacesJson' is empty but it is necessary to use it somewhere to start the polling
       )
     )
   )
@@ -216,8 +216,8 @@
 )
 
 (defvar brightness false)
-(defpoll currBrightness :interval "0.5s" "scripts/brightness.sh get")
-(deflisten brightnessIcon :initial "" `tail -F ./tmp/gamma`)
+(defpoll brightnessValue :interval "0.5s" "scripts/brightness.sh get")
+; (deflisten brightnessIcon :initial "" `tail -F ./tmp/gamma`)
 
 (defwidget brightnessWidget []
   (eventbox
@@ -229,7 +229,7 @@
       :space-evenly false
       (button
         :class "button-brightness"
-        :onclick "scripts/gamma.sh set"
+        :onclick ""
         ""
       )
       (revealer
@@ -239,11 +239,12 @@
         (scale
           :class "scale-brightness"
           :orientation "v"
-          :tooltip "Brightness ${currBrightness}%"
+          :tooltip "Brightness ${brightnessValue}%"
           :max 101
-          :value "${currBrightness}"
+          :value brightnessValue
           :min 20
           :onchange "scripts/brightness.sh set {}"
+          ; :round-digits: 0
           :flipped true
           :height 100
           :width 10
@@ -272,7 +273,6 @@
         )
         (label
             :class "label-battery"
-            :orientation "v"
             :style "${batteryLabel}"
             :text "${batteryValue}%"
         )

@@ -38,30 +38,34 @@ workspaces-json() {
 	done
 
 	json+="]"
-	echo ${json}
+	echo $(echo ${json} | jq -c)
 }
 
 write-json() {
-	file_dim=$(stat -c%s "$LOCK_FILE")
-	max_dim=1048576
-
-	if ((file_dim > max_dim)); then
-		rm "$LOCK_FILE"
-		echo "Removed!"
-	fi
 
 	if [[ ! -e $LOCK_FILE ]]; then
 		echo $(workspaces-json) >$LOCK_FILE
+		# echo "Created lock file $LOCK_FILE"
+		exit 0
 	fi
 
-	last_json=$(tail -n 1 $LOCK_FILE | jq)
+	file_dim=$(stat -c%s "$LOCK_FILE")
+	max_dim=1048576
+	if ((file_dim > max_dim)); then
+		rm "$LOCK_FILE"
+		# echo "Removed lock file $LOCK_FILE"
+	fi
+
+	last_json=$(tail -n 1 $LOCK_FILE | jq -c)
+	# last_json="'${last_json}'"
 	# echo ${last_json}
-	actual_json=$(workspaces-json | jq)
+	actual_json=$(workspaces-json)
+	# actual_json="'${actual_json}'"
 	# echo ${actual_json}
 
 	if [ "${last_json}" != "${actual_json}" ]; then
-		echo ${actual_json} >>${LOCK_FILE}
-		echo "Updated!"
+		echo "${actual_json}" >>$LOCK_FILE
+		# echo "Updated"
 	fi
 }
 
