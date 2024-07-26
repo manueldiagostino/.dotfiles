@@ -13,6 +13,8 @@ Theme and icons have to be set manually with `qt5ct`.
 
 ## Dependencies
 
+> The list may be incomplete!
+
 ```bash
 sudo pacman -S \
 sddm openssh \
@@ -66,15 +68,8 @@ sudo pacman -S otf-font-awesome
 ```
 
 ## [Idle management](https://github.com/hyprwm/hypridle)
-`# TODO:` 
-
 
 ## Lock screen
-```bash
-sudo pacman -S otf-font-awesome
-
-```
-
 
 ## TODO
 - [ ] copiare screenshots negli appunti
