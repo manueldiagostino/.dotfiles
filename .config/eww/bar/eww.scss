@@ -17,13 +17,12 @@ $white: $foreground;
 $teal: #8bd5ca;
 $mauve: #c6a0f6;
 $maroon: #ee99a0;
+$sapphire: #7dc4e4;
 
-$surface-darkgrey: #20252b;
-$surface-fg: #5b6078;
-$surface-lightgrey: #3d464e;
-$surface-grey: #2b3238;
-$surface-red: #f87070;
-$backg-PowOffBtn: #ff2f00;
+$surface2: #5b6078;
+$surface1: #494d64;
+$surface0: #363a4f;
+
 $text: #cdd6f4;
 
 * {
@@ -41,7 +40,7 @@ $bar-radius: 12px;
   background-repeat: no-repeat;
   background-size: contain;
   background-color: rgba($background, 0.8);
-  color: rgba($surface-fg, 0.8);
+  color: rgba($surface2, 0.8);
   border-radius: $bar-radius;
   margin: 0;
 }
@@ -66,10 +65,6 @@ $bar-radius: 12px;
 
 .topBox {
   .brightnessBox {
-
-    button {
-      margin: 0 0 4px 0;
-    }
 
     .button-brightness {
       color: $yellow
@@ -100,8 +95,9 @@ $bar-radius: 12px;
   }
 
   .batteryBox {
+
     .button-battery {
-      margin: 4 0 -4px 0;
+      margin: 4px 0 -4px 0;
       font-size: 18px;
 
       &:hover {
@@ -112,21 +108,43 @@ $bar-radius: 12px;
 
     .label-battery {
       font-family: "Font Awesome 6 Brands";
+      padding: 0 0 6px 0;
+    }
+  }
+
+  .wifiBox {
+    color: $sapphire;
+
+    .button-wifi {
+      margin: 4px 0 -4px 0;
+      font-size: 18px;
+    }
+
+    .label-wifi {
+      font-family: "Font Awesome 6 Brands";
+      font-size: 15px;
+      padding: 0 0 6px 0;
     }
   }
 }
 
 .middleBox {
 
+  .hour,
+  .min {
+    font-family: Comic Mono;
+    font-weight: bold;
+  }
+
   .hour {
     color: $maroon;
-    font-size: 36px;
-    margin: 0 0 -14px 0;
+    font-size: 32px;
+    margin: 0;
   }
 
   .min {
     color: $text;
-    margin: -14px 0 0 0;
+    margin: -4px 0 0 0;
   }
 }
 
@@ -143,7 +161,7 @@ $bar-radius: 12px;
     }
 
     .button-workspace {
-      color: $surface-fg;
+      color: $surface2;
     }
   }
 
@@ -172,4 +190,17 @@ $bar-radius: 12px;
       }
     }
   }
+}
+
+/** tooltip **/
+tooltip.background {
+  background-color: $surface0;
+  font-size: 14px;
+  border-radius: $bar-radius;
+  color: $text;
+}
+
+tooltip label {
+  padding: 6px;
+  margin: 4px 0;
 }

@@ -208,10 +208,10 @@
     :class "controlPanel"
     ; (volumeWidget)
     ; (micWidget)
-    ; (wifiWidget)
     (brightnessWidget)
     ; (bluetoothWidget)
     (batteryWidget)
+    (wifiWidget)
   )
 )
 
@@ -261,20 +261,40 @@
 (defpoll batteryLabel :interval "5s" "scripts/battery.sh label_style")
 
 (defwidget batteryWidget []
-    (box
-        :class "batteryBox"
-        :orientation "v"
-        :space-evenly false
-        (button
-            :class "button-battery"
-            :onclick " "
-            :style "${batteryButton}"
-            batteryIcon
-        )
-        (label
-            :class "label-battery"
-            :style "${batteryLabel}"
-            :text "${batteryValue}%"
-        )
+  (box
+    :class "batteryBox"
+    :orientation "v"
+    :space-evenly false
+    (button
+      :class "button-battery"
+      :onclick " "
+      :style "${batteryButton}"
+      batteryIcon
     )
+    (label
+      :class "label-battery"
+      :style "${batteryLabel}"
+      :text "${batteryValue}%"
+    )
+  )
+)
+
+(defpoll wifiIcon :interval "1s" "scripts/wifi.sh icon")
+(defpoll wifiName :interval "1s" "scripts/wifi.sh name")
+
+(defwidget wifiWidget []
+  (box
+    :class "wifiBox"
+    :orientation "v"
+    :space-evenly false
+    (button
+      :class "button-wifi"
+      :onclick "alacritty -t float_alacritty --config-file /home/manuel/.config/alacritty/float_alacritty.toml -e nmtui &"
+      wifiIcon
+    )
+    (label
+      :class "label-wifi"
+      :text "${wifiName}"
+    )
+  )
 )

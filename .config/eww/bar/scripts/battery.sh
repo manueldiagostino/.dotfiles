@@ -86,7 +86,7 @@ label_style() {
 		exit
 	fi
 
-	echo "color: $color; margin: 0px; font-size: 15px;"
+	echo "color: $color; font-size: 15px;"
 }
 
 [ "$1" = "icon" ] && icon && exit
