@@ -1,3 +1,11 @@
+# Gallery
+![screen1](./gallery/1.png)
+<br>
+![screen2](./gallery/2.jpeg)
+<br>
+![screen3](./gallery/3.jpeg)
+<br>
+
 # Installation
 
 For dotfiles:
