@@ -206,11 +206,11 @@
     :orientation "v"
     :space-evenly false
     :class "controlPanel"
-    ; (volumeWidget)
-    ; (micWidget)
-    (brightnessWidget)
-    ; (bluetoothWidget)
     (batteryWidget)
+    (brightnessWidget)
+    (volumeWidget)
+    (micWidget)
+    ; (bluetoothWidget)
     (wifiWidget)
   )
 )
@@ -279,6 +279,7 @@
   )
 )
 
+
 (defpoll wifiIcon :interval "1s" "scripts/wifi.sh icon")
 (defpoll wifiName :interval "1s" "scripts/wifi.sh name")
 
@@ -292,9 +293,83 @@
       :onclick "alacritty -t float_alacritty --config-file /home/manuel/.config/alacritty/float_alacritty.toml -e nmtui &"
       wifiIcon
     )
-    (label
-      :class "label-wifi"
-      :text "${wifiName}"
-    )
+    ; (label
+    ;   :class "label-wifi"
+    ;   :text "${wifiName}"
+    ; )
   )
+)
+
+
+(defvar volume false)
+(deflisten volumeIcon :initial "" `tail -F $HOME/.cache/volume.lock`)
+(defpoll currVolume :interval "1s" "./scripts/audio.sh get-volume")
+
+(defwidget volumeWidget []
+    (eventbox
+        :onhover "${eww} update volume=true"
+        :onhoverlost "${eww} update volume=false"
+        (box
+            :class "volumeBox"
+            :orientation "v"
+            :space-evenly false
+            (button
+                :class "button-volume"
+                :onclick "pavucontrol &"
+                volumeIcon
+            )
+            (revealer
+                :transition "slidedown"
+                :reveal volume
+                :duration "${slideDuration}"
+                (scale
+                    :class "scale-volume"
+                    :orientation "v"
+                    :tooltip "Volume ${currVolume}%"
+                    :max 101
+                    :value "${currVolume}"
+                    :min 0
+                    :onchange "./scripts/audio.sh set-volume {}"
+                    :flipped true
+                )
+            )
+        )
+    )
+)
+
+
+(defvar mic false)
+(deflisten micIcon :initial "" `tail -F $HOME/.cache/mic.lock`)
+(defpoll currMic :interval "0.5s" "./scripts/audio.sh get-mic")
+
+(defwidget micWidget []
+    (eventbox
+        :onhover "${eww} update mic=true"
+        :onhoverlost "${eww} update mic=false"
+        (box
+            :class "micBox"
+            :orientation "v"
+            :space-evenly false
+            (button
+                :class "button-mic"
+                :onclick "pavucontrol &"
+                micIcon
+            )
+            (revealer
+                :transition "slidedown"
+                :reveal mic
+                :duration "${slideDuration}"
+                (scale
+                    :class "scale-mic"
+                    :orientation "v"
+                    :tooltip "Microphone ${currMic}%"
+                    :max 101
+                    :value "${currMic}"
+                    :min 0
+                    :onchange "./scripts/audio.sh set-mic {}"
+                    :flipped true
+                )
+            )
+        )
+    )
 )

@@ -18,6 +18,9 @@ $teal: #8bd5ca;
 $mauve: #c6a0f6;
 $maroon: #ee99a0;
 $sapphire: #7dc4e4;
+$peach: #f5a97f;
+$flamingo: #f0c6c6;
+$lavander: #b7bdf8;
 
 $surface2: #5b6078;
 $surface1: #494d64;
@@ -126,6 +129,61 @@ $bar-radius: 12px;
       padding: 0 0 6px 0;
     }
   }
+
+  .volumeBox {
+    color: $flamingo;
+
+    scale {
+      min-width: 10px;
+      min-height: 100px;
+    }
+
+    trough {
+      background-color: $background-scale;
+      border-radius: 5px;
+    }
+
+    slider {
+      background-color: $flamingo;
+      min-height: 15px;
+      min-width: 10px;
+      border-radius: 5px;
+    }
+
+    highlight {
+      background-color: $flamingo;
+      min-height: 10px;
+      border-radius: 5px;
+    }
+  }
+
+  .micBox {
+    color: $lavander;
+
+    scale {
+      min-width: 10px;
+      min-height: 100px;
+    }
+
+    trough {
+      background-color: $background-scale;
+      border-radius: 5px;
+    }
+
+    slider {
+      background-color: $lavander;
+      min-height: 15px;
+      min-width: 10px;
+      border-radius: 5px;
+    }
+
+    highlight {
+      background-color: $lavander;
+      min-height: 10px;
+      border-radius: 5px;
+    }
+  }
+
 }
 
 .middleBox {
