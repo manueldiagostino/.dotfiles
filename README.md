@@ -3,7 +3,7 @@
 For dotfiles:
 ```bash
 cd ~
-git clone git@github.com:manueldiagostino/.dotfiles.git # FIX: cambiare dopo release pubblica
+git clone https://github.com/manueldiagostino/.dotfiles
 cd .dotfiles
 stow .
 ```
