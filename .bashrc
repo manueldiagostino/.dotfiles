@@ -20,3 +20,5 @@ alias tree='exa -T --icons'
 export PATH=~/.local/bin:/usr/local/texlive/2023/bin/x86_64-linux/:$PATH
 
 export QT_QUICK_CONTROLS_STYLE=org.kde.desktop
+
+alias tex2svg='function _tex2svg(){ filename="${1%.tex}"; pdflatex "$filename.tex" && pdf2svg "$filename.pdf" "$filename.svg"; }; _tex2svg'
