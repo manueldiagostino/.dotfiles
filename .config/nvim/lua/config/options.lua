@@ -4,7 +4,9 @@
 
 local set = vim.opt
 
-set.textwidth = 0
+set.textwidth = 80
+set.colorcolumn = "+1"
+set.columns = 80
 set.wrap = true
 
 -- Set the behavior of tab
@@ -14,3 +16,7 @@ set.softtabstop = 2
 set.expandtab = false
 
 set.relativenumber = true
+
+-- Enable the option to require a Prettier config file
+-- If no prettier config file is found, the formatter will not be used
+vim.g.lazyvim_prettier_needs_config = false

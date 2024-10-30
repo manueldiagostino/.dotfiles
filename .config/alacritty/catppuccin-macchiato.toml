@@ -92,11 +92,13 @@ style = "italic"
 family = "JetBrainsMonoNerdFont"
 style = "regular"
 
-[shell]
+[terminal.shell]
 args = ["--login"]
 program = "/usr/bin/zsh"
 
 [window.padding]
 x = 20
 y = 20
+
+[terminal]
 
