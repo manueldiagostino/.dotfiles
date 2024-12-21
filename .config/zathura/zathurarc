@@ -1,4 +1,4 @@
-include ./catppuccin-macchiato
+include catppuccin-macchiato
 
 set selection-clipboard clipboard
 

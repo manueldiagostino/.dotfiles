@@ -259,6 +259,7 @@
 (defpoll batteryValue :interval "5s" "scripts/battery.sh percent")
 (defpoll batteryButton :interval "5s" "scripts/battery.sh button_style")
 (defpoll batteryLabel :interval "5s" "scripts/battery.sh label_style")
+(defvar batteryNotification false)
 
 (defwidget batteryWidget []
   (box

@@ -5,7 +5,7 @@ per="$(cat "$bat/capacity")"
 
 icon() {
 
-	[ $(cat "$bat/status") = Charging ] && echo "" && exit
+	[ $(cat "$bat/status") = Charging ] && echo "" && eww -c $HOME/.config/eww/bar update batteryNotification=false && exit
 
 	if [ "$per" -gt "90" ]; then
 		icon=""
@@ -21,10 +21,20 @@ icon() {
 		icon=""
 	elif [ "$per" -gt "10" ]; then
 		icon=""
-		notify-send -u critical "Battery Low" "Connect Charger"
+
+		res=$(eww -c "$HOME/.config/eww/bar" get batteryNotification)
+		if [[ ${res} == 'false' ]]; then
+			notify-send -u critical 'Battery Low' 'Connect Charger'
+			eww -c $HOME/.config/eww/bar update batteryNotification=true
+		fi
 	elif [ "$per" -gt "0" ]; then
 		icon=""
-		notify-send -u critical "Battery Low" "Connect Charger"
+
+		res=$(eww -c "$HOME/.config/eww/bar" get batteryNotification)
+		if [[ ${res} == 'false' ]]; then
+			notify-send -u critical 'Battery Low' 'Connect Charger'
+			eww -c $HOME/.config/eww/bar update batteryNotification=true
+		fi
 	else
 		echo " " && exit
 	fi
