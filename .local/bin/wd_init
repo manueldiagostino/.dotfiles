@@ -1,0 +1,10 @@
+sudo firewall-cmd --zone=trusted --add-port=67/udp
+sudo firewall-cmd --zone=trusted --add-port=53/udp
+sudo firewall-cmd --zone=trusted --add-forward
+sudo firewall-cmd --zone=trusted --add-interface=waydroid0
+sudo firewall-cmd --runtime-to-permanent
+
+sudo systemctl stop docker
+sudo systemctl restart iptables
+sudo ip link delete docker0
+sudo systemctl restart waydroid-container
