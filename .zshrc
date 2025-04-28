@@ -1,67 +1,69 @@
-export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME="pure"
+# Add user configurations here
+# For HyDE not to touch your beloved configurations,
+# we added 2 files to the project structure:
+# 1. ~/.hyde.zshrc - for customizing the shell related hyde configurations
+# 2. ~/.zshenv - for updating the zsh environment variables handled by HyDE // this will be modified across updates
 
-plugins=(
-	zsh-autosuggestions zsh-syntax-highlighting
-	archlinux
-)
+#  Plugins 
+# oh-my-zsh plugins are loaded  in ~/.hyde.zshrc file, see the file for more information
 
-autoload -U promptinit; promptinit
-prompt pure
+#  Aliases 
+# Add aliases here
 
-export LANG=it_IT.UTF-8
-export LC_ALL=it_IT.UTF-8
-
-
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='nvim'
-# fi
-
-# ssh-agent
-export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+# open
+alias open='xdg-open'
 
 # exa aliases
 alias ls='exa'
-alias ll='exa -lhgH --icons'
+alias l='exa'
+alias ll='exa -lhH --icons'
 alias la='ll -a'
 alias tree='exa -T --icons'
 
-alias uni='cd ~/university'
-alias tesi='cd ~/university/git/tesi'
-alias open='xdg-open'
-alias sshuni='ssh $(get_env unipr_usr)'
-alias sshpc='ssh -XY $(get_env unipr_hpc)'
-alias vpnuni='export U="$(get_env unipr_email)" ; export P="$(get_env unipr_psw)" ; sudo openfortivpn connect.unipr.it:4443 --username="$U" --password="$P"'
-
-HPC_FOLDER='/home/manuel/university/23_24/hpc/'
-alias r_send_hpc='rsync -avzP -e ssh "$HPC_FOLDER" "$(get_env unipr_hpc)":"$(get_env unipr_hpc_home)"'
-alias r_recv_hpc='rsync -avzP -e ssh "$(get_env unipr_hpc)":"$(get_env unipr_hpc_home)" "$HPC_FOLDER"'
-
+# nvim
 alias vim=nvim
-# source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
-# docker
-alias dkrm='export CONT_ALL=$(docker ps -aq) ; docker kill "$CONT_ALL" ; docker rm -f "$CONT_ALL"'
-
-export PATH=~/.local/bin:/usr/local/texlive/2024/bin/x86_64-linux/:$PATH:/home/manuel/.cargo/bin
 
 # zoxide
 eval "$(zoxide init zsh)"
 alias cd='z'
 
-export JAVA_HOME='/usr/lib/jvm/java-11-openjdk'
+# git
+alias guf='git_untracked list'
+alias gufr='git_untracked remove'
 
-# alias imv='imv -bFFFFFF'
-alias tex2svg='function _tex2svg(){ filename="${1%.tex}"; pdflatex "$filename.tex" && pdf2svg "$filename.pdf" "$filename.svg"; }; _tex2svg'
 
-timezsh() {
-  shell=${1-$SHELL}
-  for i in $(seq 1 10); do time $shell -i -c exit; done
-}
 
-[ -f /opt/miniconda3/etc/profile.d/conda.sh ] && source /opt/miniconda3/etc/profile.d/conda.sh
+#  This is your file 
+# Add your configurations here
 
-export PATH=$PATH:/home/manuel/.local/lib/hyde
+# Language
+export LC_ALL=it_IT.UTF-8
+
+# XDG stuff
+export XDG_PICTURES_DIR="${HOME}/Immagini"
+
+# ssh-agent
+export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+
+
+# latex
+PATH="/usr/local/texlive/2024/bin/x86_64-linux:$PATH"
+PATH="${HOME}/.local/bin:$PATH"
+
+# # >>> conda initialize >>>
+# # !! Contents within this block are managed by 'conda init' !!
+# __conda_setup="$('/usr/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+# if [ $? -eq 0 ]; then
+#     eval "$__conda_setup"
+# else
+#     if [ -f "/usr/etc/profile.d/conda.sh" ]; then
+#         . "/usr/etc/profile.d/conda.sh"
+#     else
+#         export PATH="/usr/bin:$PATH"
+#     fi
+# fi
+# unset __conda_setup
+# # <<< conda initialize <<<
+
+# HyDE command not found handler
+unset -f command_not_found_handler
