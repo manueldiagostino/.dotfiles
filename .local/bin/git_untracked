@@ -1,0 +1,42 @@
+#!/bin/bash
+
+function list_plain() {
+    git ls-files --others --exclude-standard
+}
+
+function list() {
+    files=$(list_plain)
+    if [ -n "$files" ]; then
+        echo "Untracked files:"
+        echo "$files"
+    else
+        echo "No untracked files."
+    fi
+}
+
+function remove() {
+    files=$(list_plain)
+    if [ -n "$files" ]; then
+        echo "Untracked files:"
+        echo "$files"
+        echo ""
+        echo "$files" | xargs -o rm -Ir && echo "Untracked files removed."
+    else
+        echo "No untracked files to remove."
+    fi
+}
+
+case "$1" in
+list)
+    list
+    ;;
+remove)
+    remove
+    ;;
+list_plain)
+    list_plain
+    ;;
+*)
+    echo "Usage: $0 [list|list_plain|remove]"
+    ;;
+esac

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+USER=$(get_env unipr_email)
+PASSWORD=$(get_env unipr_psw)
+# read -p "Enter OTP: " OTP
+
+sudo openfortivpn connect.unipr.it:4443 \
+    --username=${USER} \
+    --password=${PASS} \
+    --saml-login
