@@ -1,0 +1,34 @@
+-- ~/.config/nvim/lua/CopilotChat/init.lua
+return {
+  -- {
+  --   "CopilotC-Nvim/CopilotChat.nvim",
+  --   dependencies = {
+  --     { "github/copilot.vim" },
+  --     { "nvim-lua/plenary.nvim", branch = "master" },
+  --     { "folke/which-key.nvim" },
+  --   },
+  --   build = "make tiktoken",
+  --   opts = {
+  --     -- le tue opzioni CopilotChat…
+  --   },
+  --   config = function(_, opts)
+  --     -- 1) setup del plugin CopilotChat
+  --     require("CopilotChat").setup(opts)
+  --
+  --     vim.keymap.set("n", "<leader>Cc", function()
+  --       vim.cmd("CopilotChatCommit")
+  --     end, {
+  --       desc = "💬 CopilotChat: crea commit message",
+  --       noremap = true,
+  --       silent = true,
+  --     })
+  --
+  --     -- 3) aggiungo la voce in WhichKey
+  --     local wk = require("which-key")
+  --     wk.add({
+  --       { "<leader>C", group = "Copilot" },
+  --       { "<leader>Cc", ":CopilotChatCommit<CR>", desc = "Commit message" },
+  --     })
+  --   end,
+  -- },
+}

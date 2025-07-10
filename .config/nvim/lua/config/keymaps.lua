@@ -5,7 +5,10 @@
 local opts = { noremap = true, silent = true }
 local keymap = vim.api.nvim_set_keymap
 
-keymap("v", "p", '"_dP', opts)
+keymap("n", "d", '"dd', opts)
+keymap("v", "d", '"dd', opts)
+keymap("n", "D", '"dD', opts)
+keymap("n", "x", '"dx', opts)
 
 -- Visual Block --
 -- Move text up and down

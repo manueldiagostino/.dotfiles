@@ -23,3 +23,62 @@ vim.g.lazyvim_prettier_needs_config = false
 
 -- Set to false to disable auto format
 vim.g.lazyvim_eslint_auto_format = true
+
+local function smart_format_with_wrap(start_line, end_line)
+  local shiftwidth = vim.o.shiftwidth
+  local expandtab = vim.o.expandtab
+  local textwidth = vim.o.textwidth
+
+  -- Iteriamo a ritroso per non "perdere" righe nel buffer
+  for lnum = end_line, start_line, -1 do
+    local line = vim.fn.getline(lnum)
+
+    if line:match("^%s*$") then
+      -- Righe vuote: non toccare
+    else
+      -- Costruisco indent
+      local indent = vim.fn.indent(lnum)
+      local indent_str
+      if expandtab then
+        indent_str = string.rep(" ", indent)
+      else
+        local tabs = math.floor(indent / shiftwidth)
+        local spaces = indent % shiftwidth
+        indent_str = string.rep("\t", tabs) .. string.rep(" ", spaces)
+      end
+
+      -- Splitto in parole e ricostruisco linee spezzate
+      local words = vim.split(vim.fn.trim(line), "%s+")
+      local wrapped_lines = {}
+      local curr = indent_str
+      for _, w in ipairs(words) do
+        if #curr + #w + 1 > textwidth then
+          table.insert(wrapped_lines, curr)
+          curr = indent_str .. w
+        else
+          if #curr > #indent_str then
+            curr = curr .. " " .. w
+          else
+            curr = curr .. w
+          end
+        end
+      end
+      table.insert(wrapped_lines, curr)
+
+      -- Sovrascrivo la riga corrente e inserisco le restanti subito dopo
+      vim.fn.setline(lnum, wrapped_lines[1])
+      if #wrapped_lines > 1 then
+        -- vim.fn.append accetta una lista di righe da inserire
+        vim.fn.append(lnum, vim.list_slice(wrapped_lines, 2))
+      end
+    end
+  end
+end
+
+vim.api.nvim_create_user_command("SmartFormat", function()
+  local start_line = vim.fn.line("'<")
+  local end_line = vim.fn.line("'>")
+  smart_format_with_wrap(start_line, end_line)
+end, { range = true })
+
+vim.keymap.set("x", "gw", ":SmartFormat<CR>", { silent = true })
