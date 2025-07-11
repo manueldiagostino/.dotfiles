@@ -43,8 +43,12 @@
 # resize-overlay-duration = 4s 200ms
 
 # Font options
-font-family = "JetBrainsMono Nerd Font Mono"
+font-family = "Maple Mono"
 font-size = 14
+font-style = "SemiBold"
+font-style-bold = "ExtraBold"
+font-style-italic = "Italic"
+font-style-bold-italic = "Bold Italic"
 
 # Theme
 theme = catppuccin-mocha
@@ -58,7 +62,7 @@ window-height = 25
 
 # Add some nice looking padding
 window-padding-x = 16
-window-padding-y = 15
+window-padding-y = 8
 window-padding-balance = true
 window-save-state = always
 
