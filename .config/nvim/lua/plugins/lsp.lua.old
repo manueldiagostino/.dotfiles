@@ -56,7 +56,7 @@ return {
             if cc_dir then
               new_config.cmd = { "clangd", "--compile-commands-dir=" .. cc_dir }
             end
-            table.insert(new_config.cmd, "--fallback-style=none")
+            -- table.insert(new_config.cmd, "--fallback-style=none")
           end,
         },
       },

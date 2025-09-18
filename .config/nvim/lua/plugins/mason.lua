@@ -1,5 +1,4 @@
 return {
-	"williamboman/mason.nvim",
-	opts = { ensure_installed = { "prettier" } },
+  "mason-org/mason.nvim",
+  opts = { ensure_installed = { "prettier" } },
 }
-
