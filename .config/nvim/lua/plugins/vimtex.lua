@@ -12,6 +12,9 @@ return {
       "Token not allowed in a PDF string",
     }
 
+    -- Dice a VimTeX di identificare la radice di un progetto cercando un file .latexmkrc o una cartella .git
+    vim.g.vimtex_root_patterns = { ".latexmkrc", ".git/" }
+
     -- -- Usa XeLaTeX come motore di compilazione
     -- vim.g["vimtex_compiler_latexmk"] = {
     --   executable = "latexmk",
@@ -23,16 +26,4 @@ return {
     --   },
     -- }
   end,
-
-  wk.add({
-    { "<leader>t", group = "VimTeX" },
-    { "<leader>ta", "<cmd>:VimtexStopAll<CR>", desc = "stop all VimTeX" },
-    { "<leader>tc", "<cmd>VimtexCompile<CR>", desc = "compile" },
-    { "<leader>te", "<cmd>VimtexErrors<CR>", desc = "see errors" },
-    { "<leader>tr", "<cmd>:VimtexClearCache All<CR>", desc = "reset vimtex" },
-    { "<leader>ts", "<cmd>:VimtexStop<CR>", desc = "stop VimTeX" },
-    { "<leader>tg", "<cmd>VimtexTocToggle<CR>", desc = "toggle TOC" },
-    { "<leader>tt", "<cmd>VimtexTocOpen<CR>", desc = "open TOC" },
-    { "<leader>tv", "<cmd>VimtexView<CR>", desc = "view" },
-  }),
 }
