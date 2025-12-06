@@ -1,0 +1,41 @@
+/* User custom styles */
+
+* {
+  border-radius: 0em;
+  font-family: "Maple Mono";
+  font-size: 13px;
+}
+
+window#waybar {
+  background: alpha(@bar-bg, 0.35);
+}
+
+#leaf,
+#leaf-inverse,
+#leaf-up,
+#leaf-down,
+#leaf-right,
+#leaf-left,
+#pill,
+#pill-right,
+#pill-left,
+#pill-down,
+#pill-up,
+#pill-in,
+#pill-out {
+  background: alpha(@bar-bg, 0);
+  border-color: @main-bg;
+}
+
+/* .module { */
+/*   color: @main-fg; */
+/* } */
+
+#workspaces button.active {
+  color: @main-fg;
+  background: none;
+}
+#workspaces button:hover {
+  background: @wb-hvr-bg;
+  color: @wb-hvr-fg;
+}
