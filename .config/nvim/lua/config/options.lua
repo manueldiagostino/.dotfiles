@@ -13,16 +13,9 @@ set.wrap = true
 set.tabstop = 4
 set.shiftwidth = 4
 set.softtabstop = 4
-set.expandtab = true
+set.expandtab = false
 
 set.relativenumber = true
-
--- Enable the option to require a Prettier config file
--- If no prettier config file is found, the formatter will not be used
-vim.g.lazyvim_prettier_needs_config = false
-
--- Set to false to disable auto format
-vim.g.lazyvim_eslint_auto_format = true
 
 local function smart_format_with_wrap(start_line, end_line)
   local shiftwidth = vim.o.shiftwidth
@@ -82,3 +75,11 @@ vim.api.nvim_create_user_command("SmartFormat", function()
 end, { range = true })
 
 vim.keymap.set("x", "gw", ":SmartFormat<CR>", { silent = true })
+
+vim.filetype.add({
+  extension = {
+    mzn = "zinc",
+    dzn = "zinc",
+    fzn = "zinc",
+  },
+})

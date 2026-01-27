@@ -101,7 +101,7 @@ luasnip.add_snippets("tex", {
   s("frame", {
     t("\\begin{frame}{"),
     i(1, "Frame title"),
-    t({ "}{", "\t" }),
+    t({ "}", "\t" }),
     i(0),
     t({
       "",

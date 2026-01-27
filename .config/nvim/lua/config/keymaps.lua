@@ -110,3 +110,8 @@ end, { desc = "Toggle Quickfix List" })
 
 map("n", "[q", "<cmd>cprevious<cr>", { desc = "Previous Quickfix" })
 map("n", "]q", "<cmd>cnext<cr>", { desc = "Next Quickfix" })
+
+vim.keymap.set("n", "<C-h>", "<Cmd>TmuxNavigateLeft<CR>", {})
+vim.keymap.set("n", "<C-j>", "<Cmd>TmuxNavigateDown<CR>", {})
+vim.keymap.set("n", "<C-k>", "<Cmd>TmuxNavigateUp<CR>", {})
+vim.keymap.set("n", "<C-l>", "<Cmd>TmuxNavigateRight<CR>", {})
