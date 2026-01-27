@@ -1,18 +1,12 @@
-export ZDOTDIR=$HOME/.config/zsh
+#!/usr/bin/env zsh
 
-# --- XDG Base Directory Specification ---
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+XDG_CONFIG_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+XDG_CONFIG_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+export ZDOTDIR="${ZDOTDIR:-$XDG_CONFIG_HOME/zsh}"
 
-# User-specific configuration files (default: ~/.config)
-export XDG_CONFIG_HOME="$HOME/.config"
-
-# User-specific data files (default: ~/.local/share)
-export XDG_DATA_HOME="$HOME/.local/share"
-
-# User-specific non-essential data files (default: ~/.cache)
-export XDG_CACHE_HOME="$HOME/.cache"
-
-# User-specific state data (default: ~/.local/state)
-export XDG_STATE_HOME="$HOME/.local/state"
-
-# # Ensure these directories exist to avoid errors in some applications
-# mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME" "$XDG_CACHE_HOME" "$XDG_STATE_HOME"
+if ! source $ZDOTDIR/.zshenv; then
+    echo "FATAL Error: Could not source $ZDOTDIR/.zshenv"
+    return 1
+fi
