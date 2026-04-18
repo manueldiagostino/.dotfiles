@@ -1,5 +1,6 @@
 return {
   "L3MON4D3/LuaSnip",
+  build = "make install_jsregexp",
   dependencies = {
     {
       "rafamadriz/friendly-snippets",
@@ -7,6 +8,14 @@ return {
         require("luasnip.loaders.from_vscode").lazy_load()
         require("luasnip.loaders.from_lua").load({ paths = "~/.config/nvim/lua/snippets/" })
       end,
+
+      ft = { "tex", "sty" },
     },
   },
+  opts = {
+    history = true,
+    delete_check_events = "TextChanged",
+  },
+  lazy = true,
+  ft = { "tex", "sty" },
 }

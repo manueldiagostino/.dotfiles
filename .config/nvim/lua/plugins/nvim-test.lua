@@ -54,10 +54,12 @@ return {
         },
       },
     },
+    ft = { "java" },
   },
 
   {
     "rcasia/neotest-java",
     dependencies = {},
+    ft = { "java" },
   },
 }

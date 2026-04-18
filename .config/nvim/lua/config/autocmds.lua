@@ -18,6 +18,14 @@ vim.api.nvim_create_user_command("MarkviewReload", function()
   print("Markview ricaricato!")
 end, {})
 
+-- Fixed height for quickfix window
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "qf",
+  callback = function()
+    vim.cmd("resize 2")
+  end,
+})
+
 -- Force load MiniZinc syntax via direct source
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "zinc",

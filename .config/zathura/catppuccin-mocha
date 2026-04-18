@@ -24,9 +24,14 @@ set recolor                   "false"
 set recolor-lightcolor        rgba(30,30,46,1)
 set recolor-darkcolor         rgba(205,214,244,1)
 
+set index-fg                  rgba(205,214,244,1)
+set index-bg                  rgba(30,30,46,1)
+set index-active-fg           rgba(205,214,244,1)
+set index-active-bg           rgba(49,50,68,1)
+
 set render-loading-bg         rgba(30,30,46,1)
 set render-loading-fg         rgba(205,214,244,1)
 
 set highlight-color           rgba(147,153,178,0.3)
-set highlight-fg              rgba(205,214,244,1)
+set highlight-fg              "#d36582"
 set highlight-active-color    rgba(203,166,247,0.3)

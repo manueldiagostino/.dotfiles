@@ -11,6 +11,14 @@ return {
       "specifier changed to",
       "Token not allowed in a PDF string",
     }
+    vim.g["vimtex_quickfix_ignore_filters"] = {
+      "Underfull",
+      "Overfull",
+      "specifier changed to",
+      "Token not allowed in a PDF string",
+      'Missing "address"',
+      'Missing "publisher"',
+    }
 
     -- Dice a VimTeX di identificare la radice di un progetto cercando un file .latexmkrc o una cartella .git
     vim.g.vimtex_root_patterns = { ".latexmkrc", ".git/" }
@@ -26,4 +34,5 @@ return {
     --   },
     -- }
   end,
+  ft = { "tex", "sty" },
 }

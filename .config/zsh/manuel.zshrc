@@ -1,3 +1,5 @@
+source ~/.config/zsh/catppuccin_mocha-zsh-syntax-highlighting.zsh
+
 # # Helpful aliases
 alias c='clear'                                                        # clear terminal
 alias l='eza -lh --icons=auto'                                         # long list
@@ -35,7 +37,7 @@ alias gufr='git_untracked remove'
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
 
 if [[ "$ZSH_CONDA" == "1" ]]; then
-	[ -f /opt/miniconda3/etc/profile.d/conda.sh ] && source /opt/miniconda3/etc/profile.d/conda.sh
+	[ -f ~/miniconda3/bin/activate ] && source ~/miniconda3/bin/activate
 	export CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1
 fi
 
@@ -43,8 +45,16 @@ fi
 export MANPATH="/usr/local/texlive/2025/texmf-dist/doc/man:${MANPATH:-}"
 export INFOPATH="/usr/local/texlive/2025/texmf-dist/doc/info:${INFOPATH:-}"
 export PATH="/usr/local/texlive/2025/bin/x86_64-linux:$PATH"
+export PATH="/home/manuel/.local/bin:$PATH"
+export PATH="/home/manuel/.local/share/nvim/mason/bin:$PATH"
 
 eval "$(direnv hook zsh)"
 
 # Java
 export JAVA_HOME='/usr/lib/jvm/java-21-openjdk/'
+
+export EDITOR=nvim
+
+# alias opencode="CHUTES_API_KEY=\$(pass chutes/api_key) opencode"
+fpath=(~/.zsh/completions $fpath)
+autoload -U compinit && compinit

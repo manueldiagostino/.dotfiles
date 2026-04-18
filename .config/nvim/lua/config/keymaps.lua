@@ -78,15 +78,15 @@ map("t", "<C-t>", "<cmd>close<cr>", { desc = "Hide Terminal" })
 -- Salva file
 map({ "i", "x", "n", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save File" })
 
--- LuaSnip: navigazione tra gli snippet
-local ls = require("luasnip")
+-- LuaSnip: navigazione tra gli snippet (lazy loaded)
 map({ "i", "s" }, "<C-L>", function()
-  ls.jump(1)
+  require("luasnip").jump(1)
 end, { silent = true, desc = "Snippet Jump Forward" })
 map({ "i", "s" }, "<C-J>", function()
-  ls.jump(-1)
+  require("luasnip").jump(-1)
 end, { silent = true, desc = "Snippet Jump Backward" })
 map({ "i", "s" }, "<C-E>", function()
+  local ls = require("luasnip")
   if ls.choice_active() then
     ls.change_choice(1)
   end
