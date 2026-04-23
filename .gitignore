@@ -3,3 +3,7 @@ AGENTS.md
 .agents/
 .sisyphus/
 .worktrees/
+.tmp/
+.opencode/
+opencode.json
+*zcompdump*
