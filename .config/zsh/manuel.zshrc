@@ -47,6 +47,7 @@ export INFOPATH="/usr/local/texlive/2025/texmf-dist/doc/info:${INFOPATH:-}"
 export PATH="/usr/local/texlive/2025/bin/x86_64-linux:$PATH"
 export PATH="/home/manuel/.local/bin:$PATH"
 export PATH="/home/manuel/.local/share/nvim/mason/bin:$PATH"
+export PATH="/home/manuel/.cargo/bin:$PATH"
 
 eval "$(direnv hook zsh)"
 

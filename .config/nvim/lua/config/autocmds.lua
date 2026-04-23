@@ -37,3 +37,13 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.cmd("source " .. syntax_file)
   end,
 })
+
+vim.api.nvim_create_autocmd({ "LspDetach" }, {
+  callback = function(args)
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    if client and next(client.attached_buffers) == nil then
+      client:stop()
+    end
+  end,
+  desc = "Stop LSP client when no buffers remain",
+})
