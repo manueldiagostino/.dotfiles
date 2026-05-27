@@ -1,0 +1,47 @@
+#!/bin/bash
+CONFIG_DIR="$HOME/.config/opencode"
+CONFIG_FILE="$CONFIG_DIR/oh-my-opencode-slim.jsonc"
+
+get_current_preset() {
+	if [ -f "$CONFIG_FILE" ]; then
+		# Extracts the value of the first "preset" key found
+		grep -m1 '"preset"' "$CONFIG_FILE" | sed 's/.*"preset"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/'
+	fi
+}
+
+update_preset() {
+	local new_preset=$1
+	if [ -f "$CONFIG_FILE" ]; then
+		# Use Python to safely replace only the FIRST occurrence of 'preset'
+		# This preserves all comments and trailing commas.
+		python3 -c "
+import sys, re
+path = sys.argv[1]
+new_val = sys.argv[2]
+with open(path, 'r') as f:
+    content = f.read()
+# Target the first 'preset' key-value pair specifically
+pattern = r'(\"preset\"\s*:\s*)\"[^\"]*\"'
+updated = re.sub(pattern, r'\1\"' + new_val + '\"', content, count=1)
+with open(path, 'w') as f:
+    f.write(updated)
+" "$CONFIG_FILE" "$new_preset"
+		echo "Preset updated to: $new_preset"
+	else
+		echo "Error: Configuration file not found at $CONFIG_FILE"
+		exit 1
+	fi
+}
+
+case "$1" in
+openrouter | or) update_preset "openrouter" ;;
+copilot | cp) update_preset "copilot" ;;
+opencode-go | go) update_preset "opencode-go" ;;
+status | st | "")
+	current=$(get_current_preset)
+	[ -n "$current" ] && echo "Current preset: $current" || echo "Current preset: unknown"
+	;;
+*)
+	echo "Usage: switch-provider [openrouter|copilot|opencode-go|status]"
+	;;
+esac
