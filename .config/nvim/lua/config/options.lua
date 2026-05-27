@@ -9,11 +9,7 @@ set.colorcolumn = "+1"
 set.columns = 80
 set.wrap = true
 
--- Set the behavior of tab
-set.tabstop = 4
-set.shiftwidth = 4
-set.softtabstop = 4
-set.expandtab = false
+set.relativenumber = true
 
 set.relativenumber = true
 

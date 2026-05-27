@@ -3,6 +3,7 @@ return {
     "neovim/nvim-lspconfig",
     opts = {
       servers = {
+        texlab = { mason = false, enabled = false },
         ts_ls = { enabled = false },
         vtsls = {
           cmd = {

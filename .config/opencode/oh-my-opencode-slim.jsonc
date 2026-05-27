@@ -1,0 +1,197 @@
+{
+	"$schema": "https://unpkg.com/oh-my-opencode-slim@latest/oh-my-opencode-slim.schema.json",
+	"preset": "opencode-go",
+	"multiplexer": {
+		"type": "auto",
+		"layout": "main-vertical",
+		"main_pane_size": 75
+	},
+	"showStartupToast": true,
+	"autoUpdate": true,
+	"fallback": {
+		"enabled": false
+	},
+	"todoContinuation": {
+		"autoEnable": true,
+		"autoEnableThreshold": 4
+	},
+	"council": {
+		"presets": {
+			"default": {
+				"alpha": {
+					"model": "opencode-go/kimi-k2.5"
+				},
+				"beta": {
+					"model": "opencode-go/deepseek-v4-pro"
+				},
+				"gamma": {
+					"model": "opencode-go/qwen3.6-plus"
+				}
+			}
+		}
+	},
+	"presets": {
+		"opencode-go": {
+			"orchestrator": {
+				"model": "opencode-go/kimi-k2.5",
+				"temperature": 0.2,
+				"skills": [
+					"*"
+				],
+				"mcps": [
+					"*",
+					"!context7"
+				]
+			},
+			"oracle": {
+				"model": "opencode-go/glm-5.1",
+				"variant": "high",
+				"skills": [
+					"simplify"
+				],
+				"mcps": []
+			},
+			"librarian": {
+				"model": "opencode-go/deepseek-v4-flash",
+				"variant": "low",
+				"skills": [],
+				"mcps": [
+					"websearch",
+					"context7",
+					"grep_app"
+				]
+			},
+			"explorer": {
+				"model": "opencode-go/deepseek-v4-flash",
+				"variant": "low",
+				"skills": [
+					"cartography"
+				],
+				"mcps": []
+			},
+			"designer": {
+				"model": "opencode-go/glm-5.1",
+				"variant": "medium",
+				"skills": [
+					"agent-browser"
+				],
+				"mcps": [],
+			},
+			"fixer": {
+				"model": "opencode-go/qwen3.6-plus",
+				"variant": "low",
+				"skills": [],
+				"mcps": [],
+			},
+			"council": {
+				"model": "opencode-go/glm-5.1",
+			},
+		},
+		"openrouter": {
+			"orchestrator": {
+				"model": "openrouter/moonshotai/kimi-k2.5",
+				"skills": [
+					"*"
+				],
+				"mcps": [
+					"*",
+					"!context7"
+				],
+			},
+			"oracle": {
+				"model": "openrouter/z-ai/glm-5",
+				"variant": "high",
+				"skills": [
+					"simplify"
+				],
+			},
+			"librarian": {
+				"model": "openrouter/z-ai/glm-4.7-flash",
+				"variant": "low",
+				"skills": [],
+				"mcps": [
+					"websearch",
+					"context7",
+					"grep_app"
+				],
+			},
+			"explorer": {
+				"model": "openrouter/minimax/minimax-m2.5",
+				"variant": "low",
+				"skills": [
+					"cartography"
+				],
+			},
+			"designer": {
+				"model": "openrouter/z-ai/glm-5.1",
+				"variant": "medium",
+				"skills": [
+					"agent-browser"
+				],
+			},
+			"fixer": {
+				"model": "openrouter/minimax/minimax-m2.5",
+				"variant": "low",
+			},
+			"council": {
+				"model": "openrouter/moonshotai/kimi-k2.5",
+				"variant": "high",
+			},
+		},
+		// ──────────────────────────────────────────────
+		// Preset: copilot
+		// Uses GitHub Copilot provider for all agents
+		// ──────────────────────────────────────────────
+		"copilot": {
+			"orchestrator": {
+				"model": "github-copilot/gemini-3.1-pro-preview",
+				"skills": [
+					"*"
+				],
+				"mcps": [
+					"*",
+					"!context7"
+				],
+			},
+			"oracle": {
+				"model": "github-copilot/gpt-5.2",
+				"variant": "high",
+				"skills": [
+					"simplify"
+				],
+			},
+			"librarian": {
+				"model": "github-copilot/claude-haiku-4.5",
+				"variant": "low",
+				"skills": [],
+				"mcps": [
+					"websearch",
+					"context7",
+					"grep_app"
+				],
+			},
+			"explorer": {
+				"model": "github-copilot/claude-haiku-4.5",
+				"variant": "low",
+				"skills": [
+					"cartography"
+				],
+			},
+			"designer": {
+				"model": "github-copilot/gpt-5.2",
+				"variant": "medium",
+				"skills": [
+					"agent-browser"
+				],
+			},
+			"fixer": {
+				"model": "github-copilot/claude-haiku-4.5",
+				"variant": "low",
+			},
+			"council": {
+				"model": "github-copilot/gpt-5.2",
+				"variant": "xhigh",
+			},
+		},
+	},
+}

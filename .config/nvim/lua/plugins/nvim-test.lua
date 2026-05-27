@@ -1,6 +1,9 @@
 return {
   {
     "nvim-neotest/neotest",
+    dependencies = {
+      "marilari88/neotest-vitest",
+    },
 
     keys = {
       { "<leader>t", group = "Test", mode = "n" },
@@ -52,9 +55,12 @@ return {
         ["neotest-java"] = {
           test_runner = "gradle",
         },
+        ["neotest-vitest"] = {
+          vitestCommand = "npx vitest",
+        },
       },
     },
-    ft = { "java" },
+    ft = { "java", "typescript", "javascript" },
   },
 
   {
