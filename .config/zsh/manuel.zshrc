@@ -59,3 +59,10 @@ export EDITOR=nvim
 # alias opencode="CHUTES_API_KEY=\$(pass chutes/api_key) opencode"
 fpath=(~/.zsh/completions $fpath)
 autoload -U compinit && compinit
+
+omos() {
+  local port
+  port=$(jot -r 1 49152 65535)
+  OPENCODE_PORT="$port" \
+  opencode --port "$port" "$@"
+}

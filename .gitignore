@@ -9,3 +9,5 @@ opencode.json
 *zcompdump*
 *tmux/plugins*
 .config/tmux/plugins/
+**graphify**/
+openspec/

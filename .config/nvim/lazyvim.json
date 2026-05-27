@@ -10,6 +10,7 @@
     "lazyvim.plugins.extras.lang.r",
     "lazyvim.plugins.extras.lang.tex",
     "lazyvim.plugins.extras.lang.toml",
+    "lazyvim.plugins.extras.lang.typst",
     "lazyvim.plugins.extras.test.core",
     "lazyvim.plugins.extras.util.mini-hipatterns"
   ],
