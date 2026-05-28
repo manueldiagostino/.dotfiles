@@ -4,8 +4,8 @@ AGENTS.md
 .sisyphus/
 .worktrees/
 .tmp/
-# .opencode/
-# opencode.json
+.opencode/
+opencode.json
 *zcompdump*
 *tmux/plugins*
 .config/tmux/plugins/
