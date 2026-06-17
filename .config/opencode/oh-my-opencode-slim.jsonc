@@ -4,22 +4,22 @@
 	"multiplexer": {
 		"type": "auto",
 		"layout": "main-vertical",
-		"main_pane_size": 75
+		"main_pane_size": 50
 	},
 	"showStartupToast": true,
 	"autoUpdate": true,
 	"fallback": {
 		"enabled": false
 	},
-	"todoContinuation": {
-		"autoEnable": true,
-		"autoEnableThreshold": 4
-	},
+	// "todoContinuation": {
+	// 	"autoEnable": true,
+	// 	"autoEnableThreshold": 4
+	// },
 	"council": {
 		"presets": {
 			"default": {
 				"alpha": {
-					"model": "opencode-go/kimi-k2.5"
+					"model": "opencode-go/mimo-v2.5-flash"
 				},
 				"beta": {
 					"model": "opencode-go/deepseek-v4-pro"
@@ -33,7 +33,7 @@
 	"presets": {
 		"opencode-go": {
 			"orchestrator": {
-				"model": "opencode-go/kimi-k2.5",
+				"model": "opencode-go/deepseek-v4-pro",
 				"temperature": 0.2,
 				"skills": [
 					"*"
@@ -44,7 +44,7 @@
 				]
 			},
 			"oracle": {
-				"model": "opencode-go/glm-5.1",
+				"model": "opencode-go/kimi-k2.6",
 				"variant": "high",
 				"skills": [
 					"simplify"
@@ -64,27 +64,23 @@
 			"explorer": {
 				"model": "opencode-go/deepseek-v4-flash",
 				"variant": "low",
-				"skills": [
-					"cartography"
-				],
+				"skills": [],
 				"mcps": []
 			},
 			"designer": {
 				"model": "opencode-go/glm-5.1",
 				"variant": "medium",
-				"skills": [
-					"agent-browser"
-				],
+				"skills": [],
 				"mcps": [],
 			},
 			"fixer": {
-				"model": "opencode-go/qwen3.6-plus",
+          "model": "opencode-go/mimo-v2.5",
 				"variant": "low",
 				"skills": [],
 				"mcps": [],
 			},
 			"council": {
-				"model": "opencode-go/glm-5.1",
+				"model": "opencode-go/mimo-v2.5-pro",
 			},
 		},
 		"openrouter": {
@@ -118,16 +114,12 @@
 			"explorer": {
 				"model": "openrouter/minimax/minimax-m2.5",
 				"variant": "low",
-				"skills": [
-					"cartography"
-				],
+				"skills": [],
 			},
 			"designer": {
 				"model": "openrouter/z-ai/glm-5.1",
 				"variant": "medium",
-				"skills": [
-					"agent-browser"
-				],
+				"skills": [],
 			},
 			"fixer": {
 				"model": "openrouter/minimax/minimax-m2.5",
@@ -173,16 +165,12 @@
 			"explorer": {
 				"model": "github-copilot/claude-haiku-4.5",
 				"variant": "low",
-				"skills": [
-					"cartography"
-				],
+				"skills": [],
 			},
 			"designer": {
 				"model": "github-copilot/gpt-5.2",
 				"variant": "medium",
-				"skills": [
-					"agent-browser"
-				],
+				"skills": [],
 			},
 			"fixer": {
 				"model": "github-copilot/claude-haiku-4.5",

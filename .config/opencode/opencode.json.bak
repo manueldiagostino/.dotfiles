@@ -3,11 +3,11 @@
   "autoupdate": true,
   "plugin": [
     "@mohak34/opencode-notifier@latest",
-    "oh-my-opencode-slim@beta"
+    "oh-my-opencode-slim"
   ],
   "compaction": {
     "auto": true,
-    "prune": false,
+    "prune": true,
     "reserved": 8192
   },
   "lsp": {
@@ -73,24 +73,29 @@
     "foo": {
       "model": "local/gemma-4-12b-it",
       "prompt": "You are Gemma 4 12B!"
-    },
-
+    }
   },
   "provider": {
     "opencode-go": {
       "models": {
+        "qwen3.6-plus": {
+          "limit": {
+            "context": 200000,
+            "input": 150000,
+            "output": 120000
+          }
+        },
         "deepseek-v4-flash": {
           "limit": {
-            "context": 300000,
-            "input": 200000,
+            "context": 200000,
+            "input": 150000,
             "output": 100000
           }
         },
         "opencode-go/kimi-k2.6": {
           "limit": {
             "context": 100000,
-            "input": 80000,
-            "output": 32000
+            "output": 64000
           }
         }
       }

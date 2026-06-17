@@ -1,0 +1,886 @@
+#!/usr/bin/env python3
+"""prose-stats — Measure prose quality metrics for writing.
+
+Usage:
+  prose-stats <file> [start-line [end-line]] [--format typst|plain|latex]
+  prose-stats <file> [start-line [end-line]] --human   # human-readable table
+  prose-stats <file> --find <word>                     # search a specific word
+  prose-stats <file> --context <word>                  # search with context lines
+  prose-stats <file> --forbidden                       # check thesis forbidden words
+
+Formats:
+  typst  (default)   strips // comments, = headings            (.typ)
+  latex               strips % comments                         (.tex, .bib)
+  plain               no stripping (except blank lines)         (.md, .txt, .py, .rs)
+
+Analyzes prose word/sentence/paragraph statistics, forbidden vocabulary,
+hedging/transition density, and structural patterns as defined by the
+ai-slop-correction skill. Default output is JSON (AI-friendly). Use
+--human for the color-coded table.
+
+Exit codes:
+  0 — all metrics within acceptable ranges
+  1 — one or more metrics flagged (red zone)
+"""
+
+import re
+import sys
+import json
+import math
+import os
+from collections import Counter
+from pathlib import Path
+
+
+# ─── Configuration ───────────────────────────────────────────────────────────
+# Thresholds from the ai-slop-correction skill
+
+WARN = "\033[93m"  # yellow
+OK   = "\033[92m"  # green
+FAIL = "\033[91m"  # red
+BOLD = "\033[1m"
+RESET = "\033[0m"
+
+HAS_COLOR = sys.stdout.isatty()
+
+def color(code, text):
+    return f"{code}{text}{RESET}" if HAS_COLOR else text
+
+# ─── Tier 1: Thesis Project Forbidden Words (always flag) ────────────────────
+# From the thesis-writer system prompt's "Vocabulary Discipline" section.
+# These are project-specific rules, not AI detection. They must always be
+# flagged because the writer agreed to avoid them.
+
+THESIS_FORBIDDEN_WORDS = {
+    "delve", "delve into", "delving",
+    "underscore", "underscores", "underscored", "underscoring",
+    "pivotal",
+    "realm", "realms",
+    "landscape",
+    "tapestry",
+    "fabric",
+    "novel",
+    "robust", "robustness",
+    "seamless", "seamlessly",
+    "comprehensive",
+}
+
+THESIS_FORBIDDEN_PHRASES = [
+    "as well as",
+    "in order to",
+    "due to the fact that",
+    "has the ability to",
+    "a number of",
+    "it is worth noting that",
+    "it is important to note that",
+]
+
+# ─── Tier 2: Hard AI Markers (always flag) ──────────────────────────────────
+# These are words/phrases that genuine human academic writing almost never uses
+# at any frequency. If present, they almost certainly come from AI generation
+# and should be replaced regardless of density.
+
+HARD_MARKERS = {
+    "showcasing", "showcases", "showcased",
+    "intricate", "intricately",
+    "meticulous", "meticulously",
+    "nuanced", "nuance",
+    "surpass", "surpasses", "surpassed", "surpassing",
+    "transformative",
+    "groundbreaking",
+    "cutting-edge",
+}
+
+# ─── Tier 3: Soft Academic Overuse Markers (flag on density) ─────────────────
+# These are normal academic English words and phrases that AI overuses to the
+# point of being a signal. Occasional use is fine; use in every paragraph is not.
+# Flagged when density exceeds SOFT_DENSITY_LIMIT per 1000 words, or when
+# multiple soft markers stack in the same sentence.
+
+SOFT_MARKERS = {
+    "innovative",
+    "leveraging", "leverage", "leveraged",
+    "holistic", "holistically",
+    "paradigm",
+    "state of the art",
+}
+
+SOFT_DENSITY_LIMIT = 3.0  # per 1000 words before flagging
+
+# ─── Tier 3: Phrase-level Markers ───────────────────────────────────────────
+# Complete constructions, not single words.
+
+# Hard phrases — AI scaffolding that should never appear verbatim in a thesis
+HARD_PHRASES = [
+    "in recent years",
+    "has seen significant",
+    "has seen remarkable",
+    "despite the remarkable progress",
+    "despite the significant progress",
+    "to the best of our knowledge",
+    "it is worth noting that",
+    "it is important to note that",
+    "it is important to mention",
+    "it should be noted that",
+    "a comprehensive overview",
+    "in this paper we present",
+    "our approach achieves state of the art",
+    "our main contributions are",
+    "the rest of this paper is organized",
+    "embark on",
+    "navigate the complexities",
+]
+
+# Soft phrases — normal academic padding that AI overuses. Flag on density.
+SOFT_PHRASES = [
+    "in the context of",
+    "with respect to",
+    "as well as",
+    "in order to",
+    "due to the fact that",
+    "has the ability to",
+    "a wide range of",
+    "a number of",
+    "various aspects of",
+    "multiple factors",
+    "serve as a foundation",
+]
+
+SOFT_PHRASE_LIMIT = 2.0  # per 1000 words before flagging
+
+# Hedging phrases
+HEDGE_PHRASES = [
+    "may", "might", "could", "possibly", "potentially",
+    "perhaps", "arguably", "seems", "suggests that",
+    "tends to", "in general", "typically",
+    "it is possible that", "it may be that",
+    "it could be argued", "one could argue",
+    "to some extent", "in some sense",
+    "somewhat", "relatively",
+]
+
+# Transition phrases (excessive use is AI marker)
+TRANSITION_WORDS = {
+    "furthermore", "moreover", "additionally", "however",
+    "therefore", "thus", "hence", "nevertheless",
+    "nonetheless", "consequently", "accordingly",
+    "in addition", "in contrast", "on the other hand",
+    "as a result", "in particular", "specifically",
+}
+
+# Inflated adjectives
+INFLATED_ADJECTIVES = {
+    "state-of-the-art", "groundbreaking", "innovative",
+    "transformative", "seamless", "comprehensive",
+    "robust", "rigorous", "novel",
+}
+
+# Flowery metaphors
+FLOWERY_METAPHORS = {
+    "tapestry", "fabric", "landscape", "realm",
+    "journey", "odyssey",
+}
+
+
+# ─── Text Extraction ────────────────────────────────────────────────────────
+
+def extract_lines(filepath, start, end):
+    """Read file, optionally slicing line range."""
+    with open(filepath, "r", encoding="utf-8", errors="replace") as f:
+        lines = f.readlines()
+    if start is not None:
+        end = end or len(lines)
+        lines = lines[start - 1 : end]
+    return lines
+
+
+def extract_prose(lines, format="typst"):
+    """Filter out comments and structural markers based on file format.
+    
+    Supported formats:
+      - typst: strips // comments, = heading markers, inline // comments
+      - latex: strips % comments
+      - plain: no stripping (except blank lines)
+    
+    Returns cleaned text and paragraph boundaries."""
+    # Define format rules
+    comment_prefix = None
+    inline_comment = None
+    heading_pattern = None
+    
+    if format == "typst":
+        comment_prefix = "//"
+        inline_comment = r'//.*$'
+        heading_pattern = r'^=+\s'
+    elif format == "latex":
+        comment_prefix = "%"
+        inline_comment = r'%.*$'
+    
+    paragraphs = []
+    current = []
+    for line in lines:
+        stripped = line.strip()
+        
+        # Skip blank lines → paragraph boundary
+        if not stripped:
+            if current:
+                paragraphs.append(" ".join(current))
+                current = []
+            continue
+        
+        # Skip comment-only lines
+        if comment_prefix and stripped.startswith(comment_prefix):
+            if current:
+                paragraphs.append(" ".join(current))
+                current = []
+            continue
+        
+        # Skip heading markers
+        if heading_pattern and re.match(heading_pattern, stripped):
+            if current:
+                paragraphs.append(" ".join(current))
+                current = []
+            continue
+        
+        # Remove inline comments
+        if inline_comment:
+            cleaned = re.sub(inline_comment, '', stripped).strip()
+        else:
+            cleaned = stripped
+        
+        if cleaned:
+            current.append(cleaned)
+    if current:
+        paragraphs.append(" ".join(current))
+    return paragraphs
+
+
+# ─── Sentence Splitting ─────────────────────────────────────────────────────
+
+def split_sentences(text):
+    """Simple sentence splitter for academic prose."""
+    # Split on sentence-ending punctuation followed by space and capital letter
+    sentences = re.split(r'(?<=[.!?])\s+(?=[A-Z"(\[`#])', text)
+    # Also handle abbreviations like "e.g.", "i.e.", "Fig."
+    result = []
+    for s in sentences:
+        s = s.strip()
+        if s:
+            result.append(s)
+    return result
+
+
+def count_words(text):
+    return len(text.split())
+
+
+def avg(lst):
+    return sum(lst) / len(lst) if lst else 0.0
+
+
+def stdev(lst):
+    if len(lst) < 2:
+        return 0.0
+    m = avg(lst)
+    return math.sqrt(sum((x - m) ** 2 for x in lst) / (len(lst) - 1))
+
+
+# ─── Analysis ────────────────────────────────────────────────────────────────
+
+def analyze(filepath, start=None, end=None, format="typst"):
+    lines = extract_lines(filepath, start, end)
+    paragraphs = extract_prose(lines, format=format)
+    full_text = "\n\n".join(paragraphs)
+    full_text_lower = full_text.lower()
+    word_count = count_words(full_text)
+
+    # ── Sentences ──
+    sentences = split_sentences(full_text)
+    sent_lengths = [count_words(s) for s in sentences]
+    avg_sent_len = avg(sent_lengths) if sent_lengths else 0
+    std_sent_len = stdev(sent_lengths) if sent_lengths else 0
+    short_sent_pct = (sum(1 for l in sent_lengths if l < 10) / len(sent_lengths) * 100) if sent_lengths else 0
+    long_sent_pct = (sum(1 for l in sent_lengths if l > 30) / len(sent_lengths) * 100) if sent_lengths else 0
+    very_long_sent_pct = (sum(1 for l in sent_lengths if l > 40) / len(sent_lengths) * 100) if sent_lengths else 0
+
+    # Burstiness: ratio of short sentences to overall variance
+    # Low burstiness = sentences cluster tightly around mean
+    burstiness = std_sent_len / avg_sent_len if avg_sent_len > 0 else 0
+
+    # ── Paragraphs ──
+    para_lengths = [count_words(p) for p in paragraphs]
+    para_sent_counts = [len(split_sentences(p)) for p in paragraphs]
+    avg_para_len = avg(para_lengths) if para_lengths else 0
+    avg_para_sents = avg(para_sent_counts) if para_sent_counts else 0
+    std_para_sents = stdev(para_sent_counts) if para_sent_counts else 0
+
+    # ── Sentence Openers ──
+    openers = []
+    for s in sentences:
+        first = s.strip()
+        if first:
+            # Get first 1-2 words
+            words = first.split()
+            if words:
+                openers.append(words[0].strip('"(').lower())
+    opener_counts = Counter(openers)
+    # Count consecutive same-openers
+    consec_same = 0
+    for i in range(1, len(openers)):
+        if openers[i] == openers[i - 1]:
+            consec_same += 1
+
+    # ── Thesis Forbidden Words (always flag) ──
+    thesis_forbidden_found = []
+    for word in sorted(THESIS_FORBIDDEN_WORDS):
+        count = len(re.findall(r'\b' + re.escape(word) + r'\b', full_text_lower))
+        if count > 0:
+            thesis_forbidden_found.append((word, count))
+
+    # ── Thesis Forbidden Phrases (always flag) ──
+    thesis_forbidden_phrases_found = []
+    for phrase in THESIS_FORBIDDEN_PHRASES:
+        count = full_text_lower.count(phrase)
+        if count > 0:
+            thesis_forbidden_phrases_found.append((phrase, count))
+
+    # ── Hard Markers (always flag) ──
+    hard_found = []
+    for word in sorted(HARD_MARKERS):
+        count = len(re.findall(r'\b' + re.escape(word) + r'\b', full_text_lower))
+        if count > 0:
+            hard_found.append((word, count))
+
+    # ── Soft Markers (flag on density) ──
+    soft_found = []
+    soft_total = 0
+    for word in sorted(SOFT_MARKERS):
+        count = len(re.findall(r'\b' + re.escape(word) + r'\b', full_text_lower))
+        if count > 0:
+            soft_found.append((word, count))
+            soft_total += count
+    soft_density = soft_total / max(word_count, 1) * 1000
+
+    # Soft marker stacking: sentences with >= 2 soft markers
+    soft_stack = 0
+    for s in sentences:
+        s_lower = s.lower()
+        s_count = sum(len(re.findall(r'\b' + re.escape(w) + r'\b', s_lower)) for w in SOFT_MARKERS)
+        if s_count >= 2:
+            soft_stack += 1
+
+    # ── Hard Phrases (always flag) ──
+    hard_phrases_found = []
+    for phrase in HARD_PHRASES:
+        count = full_text_lower.count(phrase)
+        if count > 0:
+            hard_phrases_found.append((phrase, count))
+
+    # ── Soft Phrases (flag on density) ──
+    soft_phrases_found = []
+    soft_phrase_total = 0
+    for phrase in SOFT_PHRASES:
+        count = full_text_lower.count(phrase)
+        if count > 0:
+            soft_phrases_found.append((phrase, count))
+            soft_phrase_total += count
+    soft_phrase_density = soft_phrase_total / max(word_count, 1) * 1000
+
+    # ── Hedging ──
+    hedge_count = 0
+    for phrase in HEDGE_PHRASES:
+        hedge_count += len(re.findall(r'\b' + re.escape(phrase) + r'\b', full_text_lower))
+    hedge_density = hedge_count / max(word_count, 1) * 1000
+
+    # ── Transitions ──
+    transition_count = 0
+    for word in TRANSITION_WORDS:
+        transition_count += len(re.findall(r'\b' + re.escape(word) + r'\b', full_text_lower))
+    transition_density = transition_count / max(word_count, 1) * 1000
+
+    # Per-paragraph transition count
+    trans_per_para = []
+    for p in paragraphs:
+        p_lower = p.lower()
+        tc = sum(len(re.findall(r'\b' + re.escape(tw) + r'\b', p_lower)) for tw in TRANSITION_WORDS)
+        trans_per_para.append(tc)
+
+    # ── Inflated Adjectives ──
+    inflated_found = []
+    for adj in INFLATED_ADJECTIVES:
+        count = len(re.findall(r'\b' + re.escape(adj) + r'\b', full_text_lower))
+        if count > 0:
+            inflated_found.append((adj, count))
+
+    # ── Flowery Metaphors ──
+    flower_found = []
+    for meta in FLOWERY_METAPHORS:
+        count = len(re.findall(r'\b' + re.escape(meta) + r'\b', full_text_lower))
+        if count > 0:
+            flower_found.append((meta, count))
+
+    # ── Structural: Em-dashes, Parentheses, Bullets ──
+    emdash_count = len(re.findall(r'—|--', full_text))
+    emdash_density = emdash_count / max(word_count, 1) * 1000
+
+    # Parentheticals: content between (...), not citations
+    paren_content = re.findall(r'\(([^)]+)\)', full_text)
+    paren_count = len([p for p in paren_content if not re.match(r'^@?\w+$', p.strip())])
+    long_paren_count = len([p for p in paren_content if count_words(p) > 8])
+    paren_density = paren_count / max(word_count, 1) * 1000
+
+    # Bullet list detection: lines starting with - or +
+    bullet_lines = sum(1 for line in lines if re.match(r'^\s*[-+]\s', line))
+    bold_bullet_lines = sum(1 for line in lines if re.match(r'^\s*[-+]\s+\*\*', line))
+
+    # ── Function Words ──
+    words = full_text_lower.split()
+    word_count_total = len(words)
+    word_freq = Counter(words)
+    of_density = word_freq.get("of", 0) / max(word_count_total, 1) * 100
+    the_density = word_freq.get("the", 0) / max(word_count_total, 1) * 100
+    we_density = word_freq.get("we", 0) / max(word_count_total, 1) * 100
+    our_density = word_freq.get("our", 0) / max(word_count_total, 1) * 100
+
+    # ── Flags ──
+    flags = []
+
+    # Thesis forbidden words
+    if thesis_forbidden_found:
+        flags.append(("thesis_forbidden", f"Thesis forbidden words: {', '.join(w for w, _ in thesis_forbidden_found)} — replace per project style guide"))
+    if thesis_forbidden_phrases_found:
+        flags.append(("thesis_forbidden_phrases", f"Thesis forbidden phrases: {len(thesis_forbidden_phrases_found)} types — replace per project style guide"))
+
+    # Sentence length uniformity
+    if avg_sent_len > 28:
+        flags.append(("avg_sent_len", f"Average sentence length {avg_sent_len:.1f} words (target < 28)"))
+    if std_sent_len < 8 and len(sent_lengths) >= 10:
+        flags.append(("sent_stddev", f"Sentence length std dev {std_sent_len:.1f} (target > 8) — low burstiness"))
+    if short_sent_pct < 4 and len(sent_lengths) >= 10:
+        flags.append(("short_sents", f"Short sentences {short_sent_pct:.1f}% (target > 4%)"))
+    if very_long_sent_pct > 15:
+        flags.append(("very_long_sents", f"Very long sentences (>40w) {very_long_sent_pct:.1f}% (target < 15%)"))
+
+    # Sentence openers
+    if consec_same > len(openers) * 0.15:
+        flags.append(("consec_openers", f"Consecutive same openers: {consec_same}/{len(openers)} (target < 15%)"))
+
+    # Hard markers (always flag)
+    if hard_found:
+        flags.append(("hard_markers", f"Hard AI markers: {', '.join(w for w, _ in hard_found)} — these should always be replaced"))
+
+    # Soft markers (flag on density or stacking)
+    if soft_density > SOFT_DENSITY_LIMIT:
+        flags.append(("soft_density", f"Soft marker density {soft_density:.1f}/1000 words (target < {SOFT_DENSITY_LIMIT})"))
+    if soft_stack > len(sentences) * 0.05:
+        flags.append(("soft_stack", f"{soft_stack} sentences have ≥2 soft markers stacked"))
+
+    # Hard phrases (always flag)
+    if hard_phrases_found:
+        flags.append(("hard_phrases", f"AI scaffolding phrases ({len(hard_phrases_found)} types)"))
+
+    # Soft phrases (flag on density)
+    if soft_phrase_density > SOFT_PHRASE_LIMIT:
+        flags.append(("soft_phrase_density", f"Padding phrase density {soft_phrase_density:.1f}/1000 words (target < {SOFT_PHRASE_LIMIT})"))
+
+    # Hedge density
+    if hedge_density > 3:
+        flags.append(("hedge_density", f"Hedging density {hedge_density:.1f}/1000 words (target < 3)"))
+
+    # Transition density
+    if transition_density > 5:
+        flags.append(("transition_density", f"Transition density {transition_density:.1f}/1000 words (target < 5)"))
+    heavy_para = sum(1 for t in trans_per_para if t > 1)
+    if heavy_para > len(paragraphs) * 0.3:
+        flags.append(("trans_per_para", f"{heavy_para}/{len(paragraphs)} paragraphs have >1 transition word"))
+
+    # Em-dashes
+    if emdash_density > 1:
+        flags.append(("emdash", f"Em-dash density {emdash_density:.1f}/1000 words (target < 1)"))
+
+    # Parentheses
+    if long_paren_count > paren_count * 0.3:
+        flags.append(("long_parens", f"{long_paren_count}/{paren_count} parentheticals > 8 words"))
+
+    # Bullet lists
+    if bold_bullet_lines > 0:
+        flags.append(("bold_bullets", f"{bold_bullet_lines} bold-colon bullet lines"))
+
+    # Inflated adjectives
+    if inflated_found:
+        flags.append(("inflated", f"Inflated adjectives: {', '.join(w for w, _ in inflated_found)}"))
+
+    result = {
+        "file": str(filepath),
+        "line_range": f"{start or 1}–{end or 'EOF'}",
+        "word_count": word_count,
+        "paragraph_count": len(paragraphs),
+        "sentence_count": len(sentences),
+        "sentences": {
+            "avg_length": round(avg_sent_len, 1),
+            "stddev_length": round(std_sent_len, 1),
+            "burstiness": round(burstiness, 2),
+            "short_pct": round(short_sent_pct, 1),
+            "long_pct": round(long_sent_pct, 1),
+            "very_long_pct": round(very_long_sent_pct, 1),
+        },
+        "paragraphs": {
+            "avg_words": round(avg_para_len, 1),
+            "avg_sents": round(avg_para_sents, 1),
+            "stddev_sents": round(std_para_sents, 1),
+        },
+        "openers": {
+            "consecutive_same": consec_same,
+            "total": len(openers),
+        },
+        "vocabulary": {
+            "thesis_forbidden_words": thesis_forbidden_found,
+            "thesis_forbidden_phrases": thesis_forbidden_phrases_found,
+            "hard_markers": hard_found,
+            "soft_markers": soft_found,
+            "soft_density_per_1k": round(soft_density, 2),
+            "soft_stacked_sentences": soft_stack,
+            "hard_phrases": hard_phrases_found,
+            "soft_phrases": soft_phrases_found,
+            "soft_phrase_density_per_1k": round(soft_phrase_density, 2),
+            "inflated_adjectives": inflated_found,
+            "flowery_metaphors": flower_found,
+        },
+        "density": {
+            "hedging_per_1k": round(hedge_density, 2),
+            "transition_per_1k": round(transition_density, 2),
+            "emdash_per_1k": round(emdash_density, 2),
+            "paren_per_1k": round(paren_density, 2),
+        },
+        "structural": {
+            "emdash_count": emdash_count,
+            "paren_count": paren_count,
+            "long_paren_count": long_paren_count,
+            "bullet_lines": bullet_lines,
+            "bold_bullet_lines": bold_bullet_lines,
+        },
+        "function_words": {
+            "of_pct": round(of_density, 1),
+            "the_pct": round(the_density, 1),
+            "we_pct": round(we_density, 1),
+            "our_pct": round(our_density, 1),
+        },
+        "flags": [msg for _, msg in flags],
+        "flag_count": len(flags),
+        "verdict": "FAIL" if len(flags) > 0 else "PASS",
+    }
+    return result
+
+
+def print_human(result):
+    v = result["verdict"]
+    verdict_color = FAIL if v == "FAIL" else OK
+    sep = "─" * 60
+
+    print(f"\n{BOLD}Thesis Prose Statistics{RESET}")
+    print(sep)
+    print(f"  File:         {result['file']}")
+    print(f"  Lines:        {result['line_range']}")
+    print(f"  Words:        {result['word_count']}")
+    print(f"  Sentences:    {result['sentence_count']}")
+    print(f"  Paragraphs:   {result['paragraph_count']}")
+    print(f"  Verdict:      {color(verdict_color, result['verdict'])} ({result['flag_count']} flags)")
+    print(sep)
+
+    s = result["sentences"]
+    print(f"\n{BOLD}Sentences{RESET}")
+    print(f"  Avg length:     {s['avg_length']:>5.1f} words  (target < 28)")
+    print(f"  Std deviation:  {s['stddev_length']:>5.1f}       (target > 8)")
+    print(f"  Burstiness:     {s['burstiness']:>5.2f}          (higher = better)")
+    print(f"  Short <10w:     {s['short_pct']:>5.1f}%        (target > 4%)")
+    print(f"  Long >30w:      {s['long_pct']:>5.1f}%")
+    print(f"  Very long >40w: {s['very_long_pct']:>5.1f}%        (target < 15%)")
+
+    p = result["paragraphs"]
+    print(f"\n{BOLD}Paragraphs{RESET}")
+    print(f"  Avg words:      {p['avg_words']:>5.1f}")
+    print(f"  Avg sentences:  {p['avg_sents']:>5.1f}")
+    print(f"  Std dev sents:  {p['stddev_sents']:>5.1f}       (higher = more variety)")
+
+    o = result["openers"]
+    if o["total"] > 0:
+        consec_pct = o["consecutive_same"] / o["total"] * 100
+        print(f"\n{BOLD}Sentence Openers{RESET}")
+        print(f"  Consecutive same: {o['consecutive_same']}/{o['total']} ({consec_pct:.1f}%)  (target < 15%)")
+
+    vc = result["vocabulary"]
+    print(f"\n{BOLD}Vocabulary{RESET}")
+    if vc["thesis_forbidden_words"]:
+        print(f"  {color(FAIL, 'Thesis forbidden words (project style guide — always fix):')}")
+        for word, count in vc["thesis_forbidden_words"]:
+            print(f"    {color(FAIL, '✗')} '{word}' ×{count}")
+    if vc["thesis_forbidden_phrases"]:
+        print(f"  {color(FAIL, 'Thesis forbidden phrases (project style guide — always fix):')}")
+        for phrase, count in vc["thesis_forbidden_phrases"]:
+            print(f"    {color(FAIL, '✗')} '{phrase}' ×{count}")
+    if vc["hard_markers"]:
+        print(f"  {color(FAIL, 'Hard AI markers (always fix):')}")
+        for word, count in vc["hard_markers"]:
+            print(f"    - '{word}' ×{count}")
+    if vc["soft_markers"]:
+        print(f"  Soft markers (ok on occasion, density: {vc['soft_density_per_1k']}/1000w):")
+        for word, count in vc["soft_markers"]:
+            print(f"    - '{word}' ×{count}")
+        if vc["soft_stacked_sentences"] > 0:
+            print(f"    ({vc['soft_stacked_sentences']} sentences with ≥2 soft markers)")
+    if vc["hard_phrases"]:
+        print(f"  {color(FAIL, 'AI scaffolding phrases (always fix):')}")
+        for phrase, count in vc["hard_phrases"]:
+            print(f"    - '{phrase}' ×{count}")
+    if vc["soft_phrases"]:
+        print(f"  Padding phrases (density: {vc['soft_phrase_density_per_1k']}/1000w, limit < {SOFT_PHRASE_LIMIT}):")
+        for phrase, count in vc["soft_phrases"]:
+            print(f"    - '{phrase}' ×{count}")
+    if vc["inflated_adjectives"]:
+        print(f"  Inflated adjectives: {', '.join(w for w, _ in vc['inflated_adjectives'])}")
+    if vc["flowery_metaphors"]:
+        print(f"  Flowery metaphors: {', '.join(w for w, _ in vc['flowery_metaphors'])}")
+
+    d = result["density"]
+    print(f"\n{BOLD}Density (per 1000 words){RESET}")
+    print(f"  Hedging:      {d['hedging_per_1k']:>6.2f}  (target < 3)")
+    print(f"  Transitions:  {d['transition_per_1k']:>6.2f}  (target < 5)")
+    print(f"  Em-dashes:    {d['emdash_per_1k']:>6.2f}  (target < 1)")
+    print(f"  Parentheses:  {d['paren_per_1k']:>6.2f}")
+
+    st = result["structural"]
+    print(f"\n{BOLD}Structural{RESET}")
+    print(f"  Em-dashes:          {st['emdash_count']}")
+    print(f"  Parentheticals:     {st['paren_count']} ({st['long_paren_count']} > 8 words)")
+    print(f"  Bullet lines:       {st['bullet_lines']} ({st['bold_bullet_lines']} bold-colon)")
+
+    fw = result["function_words"]
+    print(f"\n{BOLD}Function Words{RESET}")
+    print(f"  'of': {fw['of_pct']:>4.1f}%    'the': {fw['the_pct']:>4.1f}%    'we': {fw['we_pct']:>4.1f}%    'our': {fw['our_pct']:>4.1f}%")
+
+    if result["flags"]:
+        print(f"\n{BOLD}{color(FAIL, '⚠  Flags')}{RESET}")
+        for i, msg in enumerate(result["flags"], 1):
+            print(f"  {i}. {color(FAIL, '✗')} {msg}")
+    else:
+        print(f"\n{color(OK, '✓  All metrics within acceptable ranges.')}")
+    print()
+
+
+# ─── Word/Phrase Queries ────────────────────────────────────────────────────
+
+def find_in_text(filepath, word, start=None, end=None, with_context=False):
+    """Search for a word/phrase in the file, return structured results."""
+    lines = extract_lines(filepath, start, end)
+    full_text = "\n".join(lines)
+    full_lower = full_text.lower()
+    query = word.lower().strip()
+
+    # Classify the word against all known lists
+    classifications = []
+    if query in {w.lower() for w in THESIS_FORBIDDEN_WORDS}:
+        classifications.append("thesis_forbidden_word")
+    if query in {p.lower() for p in THESIS_FORBIDDEN_PHRASES}:
+        classifications.append("thesis_forbidden_phrase")
+    if query in {w.lower() for w in HARD_MARKERS}:
+        classifications.append("hard_ai_marker")
+    if query in {w.lower() for w in SOFT_MARKERS}:
+        classifications.append("soft_ai_marker")
+    if any(query in p.lower() for p in HARD_PHRASES):
+        classifications.append("hard_ai_phrase")
+    if any(query in p.lower() for p in SOFT_PHRASES):
+        classifications.append("soft_padding_phrase")
+    if query in {a.lower() for a in INFLATED_ADJECTIVES}:
+        classifications.append("inflated_adjective")
+    if query in {m.lower() for m in FLOWERY_METAPHORS}:
+        classifications.append("flowery_metaphor")
+    if query in {t.lower() for t in TRANSITION_WORDS}:
+        classifications.append("transition_word")
+    if query in {h.lower() for h in HEDGE_PHRASES}:
+        classifications.append("hedge_phrase")
+
+    # Find occurrences
+    occurrences = []
+    for i, line in enumerate(lines, 1):
+        if query in line.lower():
+            # Get context window
+            ctx_start = max(0, i - 3)
+            ctx_end = min(len(lines), i + 2)
+            context_lines = []
+            for j in range(ctx_start, ctx_end):
+                marker = ">" if j + 1 == i else " "
+                context_lines.append(f"  {marker} {j+1}:{lines[j].rstrip()}")
+            occurrences.append({
+                "line": i,
+                "text": line.strip(),
+                "context": "\n".join(context_lines),
+            })
+
+    result = {
+        "query": word,
+        "file": str(filepath),
+        "total_occurrences": len(occurrences),
+        "classifications": classifications,
+        "occurrences": occurrences if with_context else [o["line"] for o in occurrences],
+    }
+    return result
+
+
+def list_forbidden(filepath, start=None, end=None):
+    """Check which thesis forbidden words/phrases appear in the text."""
+    lines = extract_lines(filepath, start, end)
+    full_text = "\n".join(lines).lower()
+
+    found_words = []
+    for word in sorted(THESIS_FORBIDDEN_WORDS):
+        count = len(re.findall(r'\b' + re.escape(word) + r'\b', full_text))
+        if count > 0:
+            found_words.append((word, count))
+
+    found_phrases = []
+    for phrase in THESIS_FORBIDDEN_PHRASES:
+        count = full_text.count(phrase)
+        if count > 0:
+            found_phrases.append((phrase, count))
+
+    all_clear = len(found_words) == 0 and len(found_phrases) == 0
+    result = {
+        "file": str(filepath),
+        "forbidden_words_found": found_words,
+        "forbidden_phrases_found": found_phrases,
+        "all_clear": all_clear,
+    }
+    return result
+
+
+# ─── CLI ────────────────────────────────────────────────────────────────────
+
+def main():
+    args = sys.argv[1:]
+    human_output = "--human" in args
+    if human_output:
+        args.remove("--human")
+
+    json_output = not human_output
+
+    # Parse and strip --format <val> upfront
+    format = "typst"
+    i = 0
+    while i < len(args):
+        if args[i] == "--format" and i + 1 < len(args):
+            fmt = args[i + 1].lower()
+            if fmt in ("typst", "plain", "latex"):
+                format = fmt
+            else:
+                print(f"Error: unknown format '{fmt}'. Use typst, plain, or latex.", file=sys.stderr)
+                sys.exit(1)
+            # Remove both --format and its value
+            args.pop(i)
+            args.pop(i)  # after pop(i), the next element shifts to position i
+            continue
+        i += 1
+
+    if not args or args[0] in ("-h", "--help"):
+        print(__doc__)
+        sys.exit(0)
+
+    # Parse query flags
+    find_word = None
+    context_mode = False
+    list_forbidden_mode = False
+
+    filtered = []
+    i = 0
+    while i < len(args):
+        if args[i] in ("--find", "-f"):
+            i += 1
+            if i < len(args):
+                find_word = args[i]
+        elif args[i] in ("--context", "-c"):
+            i += 1
+            if i < len(args):
+                find_word = args[i]
+                context_mode = True
+        elif args[i] in ("--forbidden", "-b"):
+            list_forbidden_mode = True
+        elif args[i] == "--":
+            filtered.extend(args[i+1:])
+            break
+        else:
+            filtered.append(args[i])
+        i += 1
+    args = filtered
+
+    if not args or args[0] in ("-h", "--help"):
+        print(__doc__)
+        sys.exit(0)
+
+    filepath = Path(args[0])
+    if not filepath.exists():
+        print(f"Error: file not found: {filepath}", file=sys.stderr)
+        sys.exit(1)
+
+    start = None
+    end = None
+    if len(args) >= 2:
+        start = int(args[1])
+    if len(args) >= 3:
+        end = int(args[2])
+
+    # Query modes
+    if find_word:
+        result = find_in_text(filepath, find_word, start, end, with_context=context_mode)
+        if json_output:
+            print(json.dumps(result, indent=2))
+        else:
+            cls = result["classifications"]
+            label = ""
+            if cls:
+                label = f" [{', '.join(cls)}]"
+            print(f"\n{BOLD}Find: '{find_word}'{RESET}")
+            print(f"  Occurrences: {result['total_occurrences']}{label}")
+            if result["total_occurrences"] > 0:
+                if context_mode:
+                    for o in result["occurrences"]:
+                        print(f"\n  --- line {o['line']} ---")
+                        print(o["context"])
+                else:
+                    print(f"  Lines: {', '.join(str(o) for o in result['occurrences'])}")
+            elif cls:
+                print(f"  (word is classified as {', '.join(cls)} but not found in this range)")
+            print()
+        sys.exit(0)
+
+    if list_forbidden_mode:
+        result = list_forbidden(filepath, start, end)
+        if json_output:
+            print(json.dumps(result, indent=2))
+        else:
+            print(f"\n{BOLD}Thesis Forbidden Words/Phrases Check{RESET}")
+            if result["all_clear"]:
+                print(f"  {color(OK, '✓ All clear — no forbidden words or phrases found.')}")
+            else:
+                if result["forbidden_words_found"]:
+                    print(f"  {color(FAIL, 'Forbidden words:')}")
+                    for w, c in result["forbidden_words_found"]:
+                        print(f"    {color(FAIL, '✗')} '{w}' ×{c}")
+                if result["forbidden_phrases_found"]:
+                    print(f"  {color(FAIL, 'Forbidden phrases:')}")
+                    for p, c in result["forbidden_phrases_found"]:
+                        print(f"    {color(FAIL, '✗')} '{p}' ×{c}")
+            print()
+        sys.exit(0)
+
+    # Default: full analysis
+    result = analyze(filepath, start, end, format=format)
+
+    if json_output:
+        print(json.dumps(result, indent=2))
+    else:
+        print_human(result)
+
+    sys.exit(0 if result["flag_count"] == 0 else 1)
+
+
+if __name__ == "__main__":
+    main()

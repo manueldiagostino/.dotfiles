@@ -3,5 +3,8 @@
   "keybinds": {
     "input_newline": "shift+enter",
     "editor_open": "<leader>e"
-  }
+  },
+  "plugin": [
+    "oh-my-opencode-slim"
+  ]
 }

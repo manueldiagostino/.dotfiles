@@ -48,6 +48,7 @@ export PATH="/usr/local/texlive/2025/bin/x86_64-linux:$PATH"
 export PATH="/home/manuel/.local/bin:$PATH"
 export PATH="/home/manuel/.local/share/nvim/mason/bin:$PATH"
 export PATH="/home/manuel/.cargo/bin:$PATH"
+export PATH="/home/manuel/.npm-global/bin:$PATH"
 
 eval "$(direnv hook zsh)"
 
@@ -66,3 +67,7 @@ omos() {
   OPENCODE_PORT="$port" \
   opencode --port "$port" "$@"
 }
+
+# >>> oh-my-opencode-slim background subagents >>>
+export OPENCODE_EXPERIMENTAL_BACKGROUND_SUBAGENTS=true
+# <<< oh-my-opencode-slim background subagents <<<

@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+# prose-word-count — Count prose words in a file section.
+#
+# Usage:
+#   prose-word-count <file>                        # Count prose words in entire file
+#   prose-word-count <file> <start> [<end>]        # Count in lines start..end
+#   prose-word-count <file> --format <mode>        # typst (default), latex, or plain
+#   prose-word-count <file> --human                # Show word count with label
+#
+# Formats:
+#   typst  (default)   strips // comments, ===/== headings
+#   latex               strips % comments
+#   plain               no stripping
+#
+set -euo pipefail
+
+FILE=""
+START=""
+END=""
+FORMAT="typst"
+HUMAN=false
+
+# Parse args
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --format)
+            shift
+            FORMAT="$1"
+            if [[ "$FORMAT" != "typst" && "$FORMAT" != "latex" && "$FORMAT" != "plain" ]]; then
+                echo "Error: unknown format '$FORMAT'. Use typst, latex, or plain." >&2
+                exit 1
+            fi
+            shift
+            ;;
+        --human)
+            HUMAN=true
+            shift
+            ;;
+            --help|-h)
+            sed -n '3,15p' "$0"
+            exit 0
+            ;;
+        *)
+            if [[ -z "$FILE" ]]; then
+                FILE="$1"
+            elif [[ -z "$START" ]]; then
+                START="$1"
+            elif [[ -z "$END" ]]; then
+                END="$1"
+            fi
+            shift
+            ;;
+    esac
+done
+
+if [[ -z "$FILE" ]]; then
+    echo "Error: missing file argument" >&2
+    exit 1
+fi
+if [[ ! -f "$FILE" ]]; then
+    echo "Error: file not found: $FILE" >&2
+    exit 1
+fi
+
+# Extract line range, then strip based on format
+{
+    if [[ -n "$START" && -n "$END" ]]; then
+        sed -n "${START},${END}p" "$FILE"
+    elif [[ -n "$START" ]]; then
+        sed -n "${START},\$p" "$FILE"
+    else
+        cat "$FILE"
+    fi
+} | {
+    case "$FORMAT" in
+        typst)
+            grep -v '^//' | grep -v '^===' | grep -v '^==' | grep -v '^$'
+            ;;
+        latex)
+            grep -v '^%' | grep -v '^$'
+            ;;
+        plain)
+            grep -v '^$'
+            ;;
+    esac
+} | wc -w | {
+    read -r COUNT
+    if $HUMAN; then
+        echo "Word count ($FORMAT): $COUNT"
+    else
+        echo "$COUNT"
+    fi
+}

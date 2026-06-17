@@ -7,7 +7,7 @@
 
 ## Parallelization Limits
 
-- **MAX_PARALLEL_SUBAGENTS = 5** - Never exceed 5 concurrent subagent sessions
+- **MAX_PARALLEL_SUBAGENTS = 10** - Never exceed 10 concurrent subagent sessions
 
 ## Exploration Workflow
 
@@ -64,3 +64,4 @@ When asked to create a plan:
 4. Present the plan clearly and ask for approval to proceed
 
 The ONLY exception is when the user explicitly says something like "create a plan and implement it" or "plan and execute" - in those cases, you may proceed with execution after writing the plan.
+

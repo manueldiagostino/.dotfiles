@@ -89,3 +89,5 @@ keybind = ctrl+shift+r=reload_config
 
 keybind = ctrl+a=unbind
 keybind = ctrl+b=unbind
+
+mouse-scroll-multiplier = 0.5
