@@ -2,7 +2,7 @@ source ~/.config/zsh/catppuccin_mocha-zsh-syntax-highlighting.zsh
 
 # # Helpful aliases
 alias c='clear'                                                        # clear terminal
-alias l='eza -lh --icons=auto'                                         # long list
+alias l='eza -h --icons=auto'                                         
 alias ls='eza -1 --icons=auto'                                         # short list
 alias ll='eza -lha --icons=auto --sort=name --group-directories-first' # long list all
 alias ld='eza -lhD --icons=auto'                                       # long list dirs
@@ -71,3 +71,5 @@ omos() {
 # >>> oh-my-opencode-slim background subagents >>>
 export OPENCODE_EXPERIMENTAL_BACKGROUND_SUBAGENTS=true
 # <<< oh-my-opencode-slim background subagents <<<
+
+alias btrfs-assistant='sudo env XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=wayland-1 QT_QPA_PLATFORM=wayland btrfs-assistant-bin'

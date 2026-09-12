@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "g": "^2.0.1",
+    "opencode-ai": "^1.18.12"
+  },
+  "allowScripts": {
+    "opencode-ai@1.18.12": true
+  }
+}

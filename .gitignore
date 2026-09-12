@@ -11,3 +11,18 @@ opencode.json
 .config/tmux/plugins/
 **graphify**/
 openspec/
+
+# generated / churn-prone
+.config/noctalia/
+.config/caelestia/monitors/
+.config/nvim/lazy-lock.json
+.config/nvim/package-lock.json
+.config/nvim/spell/*.spl
+/package.json
+/package-lock.json
+
+# backup junk
+*.bak
+*.bkp
+*.old
+*.bck
