@@ -8,15 +8,33 @@
 
 # Installation
 
-For dotfiles:
+Dotfiles are managed with [chezmoi](https://www.chezmoi.io/). The repo itself is the
+chezmoi source directory (`~/.dotfiles`).
+
 ```bash
-cd ~
-git clone https://github.com/manueldiagostino/.dotfiles
-cd .dotfiles
-stow .
+# first machine (this repo)
+sudo pacman -S chezmoi
+mkdir -p ~/.config/chezmoi
+cat > ~/.config/chezmoi/chezmoi.toml <<'EOF'
+sourceDir = "~/.dotfiles"
+EOF
+chezmoi init && chezmoi apply
 ```
 
+On a new machine:
+```bash
+chezmoi init --apply git@github.com:manueldiagostino/.dotfiles.git
+```
+then set `sourceDir = "~/.dotfiles"` in `~/.config/chezmoi/chezmoi.toml` if you
+prefer the source to live there.
+
+Per-machine options (`wm`: hyprland/niri/caelestia, `theme`: mocha/macchiato) are
+set in `~/.config/chezmoi/chezmoi.toml` under `[data]`, or re-prompted with
+`chezmoi init`. Files for other window managers/themes are excluded via
+`.chezmoiignore`.
+
 Theme and icons have to be set manually with `qt5ct`. 
+
 
 
 ## Dependencies

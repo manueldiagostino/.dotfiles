@@ -1,0 +1,11 @@
+{{- $wmChoices := list "hyprland" "niri" "caelestia" -}}
+{{- $themeChoices := list "mocha" "macchiato" -}}
+{{- $wm := promptChoiceOnce . "wm" "Window manager" $wmChoices "hyprland" -}}
+{{- $theme := promptChoiceOnce . "theme" "Catppuccin flavor" $themeChoices "mocha" -}}
+
+sourceDir = "~/.dotfiles"
+
+[data]
+    wm = {{ $wm | quote }}
+    theme = {{ $theme | quote }}
+    machine = {{ .chezmoi.hostname | quote }}

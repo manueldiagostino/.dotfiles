@@ -1,0 +1,35 @@
+README.md
+gallery
+.gitignore
+.chezmoi.toml.tmpl
+
+{{ if ne .wm "niri" }}
+.config/niri
+{{ end }}
+{{ if ne .wm "hyprland" }}
+.config/hypr
+{{ end }}
+{{ if ne .wm "caelestia" }}
+.config/caelestia
+{{ end }}
+
+{{ if ne .theme "macchiato" }}
+.config/zathura/catppuccin-macchiato
+.config/zsh/catppuccin_macchiato-zsh-syntax-highlighting.zsh
+{{ end }}
+{{ if ne .theme "mocha" }}
+.config/zathura/catppuccin-mocha
+.config/zsh/catppuccin_mocha-zsh-syntax-highlighting.zsh
+.config/ghostty/themes/catppuccin-mocha
+{{ end }}
+
+# managed externally (cloned by tpm / oh-my-zsh installer)
+.config/tmux/plugins
+.config/zsh/ohmyzsh
+
+# untracked build/vendor artifacts
+.config/opencode/node_modules
+.config/opencode/package-lock.json
+
+# runtime state (mutated by noctalia)
+.local/state/noctalia/settings.toml
