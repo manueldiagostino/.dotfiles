@@ -77,9 +77,9 @@
         "model": "deepseek/deepseek-flash",
         "variant": "low"
       },
-      "designer": { "model": "deepseek/deepseek-v4-flash-vision-exp", "variant": "low" },
-      "fixer": { "model": "deepseek/deepseek-v4-flash", "variant": "high" },
-      "observer": { "model": "deepseek/deepseek-v4-flash-vision-exp", "variant": "low" }
+      "designer": { "model": "deepseek/deepseek-flash", "variant": "low" },
+      "fixer": { "model": "deepseek/deepseek-flash", "variant": "high" },
+      "observer": { "model": "deepseek/deepseek-flash", "variant": "low" }
     }
   },
   "disabled_agents": []
