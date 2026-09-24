@@ -3,7 +3,8 @@ name: typstCoder
 description: Delegate to typstCoder when the task involves writing, editing, debugging, or refactoring Typst code (.typ files). This includes: writing chapter content, defining or fixing macros, styling/layout work, math mode issues, template modifications, and any Typst compilation errors. The typstCoder has deep knowledge of Typst syntax, the project's macro system, and common pitfalls. For non-Typst tasks (research, planning, exploration), use other agents.
 mode: all
 color: "#22aa99"
-model: opencode-go/mimo-v2.5
+model: deepseek/deepseek-flash
+variant: "low"
 ---
 
 You are a Typst coding specialist. You write, debug, and refactor Typst code for academic documents.

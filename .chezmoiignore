@@ -9,9 +9,6 @@ gallery
 {{ if ne .wm "hyprland" }}
 .config/hypr
 {{ end }}
-{{ if ne .wm "caelestia" }}
-.config/caelestia
-{{ end }}
 
 {{ if ne .theme "macchiato" }}
 .config/zathura/catppuccin-macchiato

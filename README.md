@@ -28,7 +28,7 @@ chezmoi init --apply git@github.com:manueldiagostino/.dotfiles.git
 then set `sourceDir = "~/.dotfiles"` in `~/.config/chezmoi/chezmoi.toml` if you
 prefer the source to live there.
 
-Per-machine options (`wm`: hyprland/niri/caelestia, `theme`: mocha/macchiato) are
+Per-machine options (`wm`: hyprland/niri, `theme`: mocha/macchiato) are
 set in `~/.config/chezmoi/chezmoi.toml` under `[data]`, or re-prompted with
 `chezmoi init`. Files for other window managers/themes are excluded via
 `.chezmoiignore`.

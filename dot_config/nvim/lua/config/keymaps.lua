@@ -118,3 +118,41 @@ vim.keymap.set("n", "<C-l>", "<Cmd>TmuxNavigateRight<CR>", {})
 
 map("n", "<Enter>", "o<ESC>", {})
 map("n", "<S-Enter>", "O<ESC>", {})
+
+------------------------------------------------------------------
+-- SEZIONE: OBSIDIAN (sotto <leader>o)
+-- Comandi del plugin obsidian-nvim (v3.16.x, legacy_commands = false).
+-- NB: le azioni "note_action" (backlinks, toggle_checkbox, ecc.)
+-- funzionano solo dentro buffer di note del vault.
+------------------------------------------------------------------
+
+-- Menu comandi Obsidian (picker integrato del plugin)
+map("n", "<leader>o", "<cmd>Obsidian<cr>", { desc = "Obsidian: Command Menu" })
+
+-- Creazione e apertura note
+map("n", "<leader>oo", "<cmd>Obsidian quick_switch<cr>", { desc = "Obsidian: Quick Switch" })
+map("n", "<leader>on", "<cmd>Obsidian new<cr>", { desc = "Obsidian: New Note" })
+map("n", "<leader>oN", "<cmd>Obsidian new_from_template<cr>", { desc = "Obsidian: New Note from Template" })
+map("n", "<leader>os", "<cmd>Obsidian search<cr>", { desc = "Obsidian: Search Notes" })
+map("n", "<leader>ob", "<cmd>Obsidian backlinks<cr>", { desc = "Obsidian: Backlinks" })
+
+-- Daily notes
+map("n", "<leader>ot", "<cmd>Obsidian today<cr>", { desc = "Obsidian: Today's Daily Note" })
+map("n", "<leader>oy", "<cmd>Obsidian yesterday<cr>", { desc = "Obsidian: Yesterday" })
+map("n", "<leader>om", "<cmd>Obsidian tomorrow<cr>", { desc = "Obsidian: Tomorrow" })
+map("n", "<leader>od", "<cmd>Obsidian dailies<cr>", { desc = "Obsidian: Dailies" })
+
+-- Collegamenti e note
+-- NB: link/link_new/extract_note richiedono una selezione visuale (range=true)
+map("n", "<leader>oL", "<cmd>Obsidian follow_link<cr>", { desc = "Obsidian: Follow Link" })
+map("n", "<leader>or", "<cmd>Obsidian rename<cr>", { desc = "Obsidian: Rename Note" })
+map("v", "<leader>ol", "<cmd>Obsidian link<cr>", { desc = "Obsidian: Link Selection" })
+map("v", "<leader>oN", "<cmd>Obsidian link_new<cr>", { desc = "Obsidian: Link Selection to New Note" })
+map("v", "<leader>oe", "<cmd>Obsidian extract_note<cr>", { desc = "Obsidian: Extract Selection to Note" })
+
+-- Varie
+map("n", "<leader>oT", "<cmd>Obsidian tags<cr>", { desc = "Obsidian: Tags" })
+map({ "n", "v" }, "<leader>oc", "<cmd>Obsidian toggle_checkbox<cr>", { desc = "Obsidian: Toggle Checkbox" })
+map("n", "<leader>op", "<cmd>Obsidian paste_img<cr>", { desc = "Obsidian: Paste Image" })
+map("n", "<leader>ox", "<cmd>Obsidian toc<cr>", { desc = "Obsidian: Table of Contents" })
+map("n", "<leader>o?", "<cmd>Obsidian check<cr>", { desc = "Obsidian: Check Setup" })

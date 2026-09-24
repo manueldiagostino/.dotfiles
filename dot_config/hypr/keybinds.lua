@@ -16,7 +16,7 @@ hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
--- hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit")) -- dwindle only
+hl.bind(mainMod .. " + O", hl.dsp.layout("togglesplit")) -- dwindle only
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen())
 
 -- Move focus with mainMod + arrow keys
@@ -38,8 +38,15 @@ for i = 1, 10 do
 end
 
 -- Example special workspace (scratchpad)
-hl.bind(mainMod .. " + S", hl.dsp.workspace.toggle_special("magic"))
-hl.bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }))
+-- (moved from SUPER+S, which now toggles the Noctalia control-center)
+-- SUPER+A shows/hides it, SUPER+SHIFT+A toggles the focused window in/out of it
+hl.bind(mainMod .. " + A", hl.dsp.workspace.toggle_special("magic"))
+hl.bind(
+	mainMod .. " + SHIFT + A",
+	hl.dsp.exec_cmd(
+		"hyprctl activewindow -j | jq -r '.workspace.name' | grep -q '^special:magic$' && hyprctl dispatch 'hl.dsp.window.move({ workspace = \"r+0\" })' || hyprctl dispatch 'hl.dsp.window.move({ workspace = \"special:magic\" })'"
+	)
+)
 
 -- Scroll through existing workspaces with mainMod + scroll
 hl.bind(mainMod .. "+ SHIFT + J", hl.dsp.focus({ workspace = "e+1" }))
@@ -52,11 +59,20 @@ hl.bind(mainMod .. "+ CTRL + L", hl.dsp.window.move({ direction = "right" }))
 hl.bind(mainMod .. "+ CTRL + J", hl.dsp.window.move({ direction = "down" }))
 hl.bind(mainMod .. "+ CTRL + K", hl.dsp.window.move({ direction = "up" }))
 
+-- Switch workspaces with mainMod + PgUp/PgDn
+-- Move active window with mainMod + SHIFT + PgUp/PgDn
+hl.bind(mainMod .. " + Page_Down", hl.dsp.focus({ workspace = "e+1" }), { repeating = true })
+hl.bind(mainMod .. " + Page_Up", hl.dsp.focus({ workspace = "e-1" }), { repeating = true })
+hl.bind(mainMod .. " + SHIFT + Page_Down", hl.dsp.window.move({ workspace = "e+1" }), { repeating = true })
+hl.bind(mainMod .. " + SHIFT + Page_Up", hl.dsp.window.move({ workspace = "e-1" }), { repeating = true })
+
 -- Move/resize windows with mainMod + LMB/RMB and dragging
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
 hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 
 -- Increase/decrease active window size with mainMod + Equal/Minus
+-- (Plus = Shift+Equal on US layout, so bind both)
+hl.bind(mainMod .. " + Equal", hl.dsp.window.resize({ x = 100, y = 0, relative = true }))
 hl.bind(mainMod .. " + Plus", hl.dsp.window.resize({ x = 100, y = 0, relative = true }))
 hl.bind(mainMod .. " + Minus", hl.dsp.window.resize({ x = -100, y = 0, relative = true }))
 
@@ -113,6 +129,10 @@ hl.bind("CTRL + ALT + Delete", hl.dsp.exec_cmd("noctalia msg panel-toggle sessio
 -- Screenshots (Stamp / Print Screen key)
 hl.bind("Print", hl.dsp.exec_cmd("noctalia msg screenshot-region"))
 hl.bind("SHIFT + Print", hl.dsp.exec_cmd("noctalia msg screenshot-fullscreen"))
+
+-- Screenshot fallbacks for keyboards without a Print key (Nuphy AIR75 on elaphe)
+hl.bind(mainMod .. " + X", hl.dsp.exec_cmd("noctalia msg screenshot-region"))
+hl.bind(mainMod .. " + SHIFT + X", hl.dsp.exec_cmd("noctalia msg screenshot-fullscreen"))
 
 -- Paper note generator (opencode): prompt for a PDF path/URL, floating chat
 hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("/home/manuel/git/phd-literature/bin/paper-note --prompt"))

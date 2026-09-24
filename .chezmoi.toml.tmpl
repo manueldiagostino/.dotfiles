@@ -1,11 +1,28 @@
-{{- $wmChoices := list "hyprland" "niri" "caelestia" -}}
+{{- $wmChoices := list "hyprland" "niri" -}}
 {{- $themeChoices := list "mocha" "macchiato" -}}
 {{- $wm := promptChoiceOnce . "wm" "Window manager" $wmChoices "hyprland" -}}
 {{- $theme := promptChoiceOnce . "theme" "Catppuccin flavor" $themeChoices "mocha" -}}
+{{- $kbChoices := list "us" "it" "us, it" -}}
+{{- $kbLayout := promptChoiceOnce . "kbLayout" "Keyboard layout" $kbChoices "us" -}}
+
+{{- /* Per-machine overrides, keyed by hostname (falls back to $defaults) */ -}}
+{{- $machines := dict
+      "hierophis" (dict "fontSize" 12 "paddingX" 2 "paddingY" 0 "monitor" "eDP-1" "kbLayout" "us")
+      "elaphe" (dict "fontSize" 13 "paddingX" 10 "paddingY" 5 "monitor" "HDMI-A-2" "kbLayout" "us, it")
+-}}
+{{- $defaults := dict "fontSize" 13 "paddingX" 10 "paddingY" 5 "monitor" "eDP-1" -}}
+{{- $machine := index $machines .chezmoi.hostname -}}
+{{- if not $machine -}}{{- $machine = $defaults -}}{{- end -}}
+{{- if hasKey $machine "kbLayout" -}}{{- $kbLayout = $machine.kbLayout -}}{{- end -}}
 
 sourceDir = "~/.dotfiles"
 
 [data]
     wm = {{ $wm | quote }}
     theme = {{ $theme | quote }}
+    kbLayout = {{ $kbLayout | quote }}
     machine = {{ .chezmoi.hostname | quote }}
+    fontSize = {{ $machine.fontSize }}
+    paddingX = {{ $machine.paddingX }}
+    paddingY = {{ $machine.paddingY }}
+    monitor = {{ $machine.monitor | quote }}

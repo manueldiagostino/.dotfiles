@@ -5,7 +5,7 @@
     "layout": "main-vertical",
     "main_pane_size": 50
   },
-  "preset": "opencode-go",
+  "preset": "deepseek",
   "presets": {
     "openai": {
       "orchestrator": {
@@ -47,7 +47,7 @@
     },
     "opencode-go": {
       "orchestrator": {
-        "model": "opencode-go/glm-5.3-flash",
+        "model": "opencode-go/deepseek-v4-pro",
         "variant": "thinking"
       },
       "oracle": { "model": "opencode-go/qwen3.7-max", "variant": "max" },
@@ -62,6 +62,24 @@
       "designer": { "model": "opencode-go/kimi-k2.7-code" },
       "fixer": { "model": "opencode-go/deepseek-v4-flash", "variant": "high" },
       "observer": { "model": "opencode-go/deepseek-v4-flash-vision-exp" }
+    },
+    "deepseek": {
+      "orchestrator": {
+        "model": "deepseek/deepseek-flash",
+        "variant": "high"
+      },
+      "oracle": { "model": "deepseek/deepseek-v4-pro", "variant": "max" },
+      "librarian": {
+        "model": "deepseek/deepseek-flash",
+        "variant": "low"
+      },
+      "explorer": {
+        "model": "deepseek/deepseek-flash",
+        "variant": "low"
+      },
+      "designer": { "model": "deepseek/deepseek-v4-flash-vision-exp", "variant": "low" },
+      "fixer": { "model": "deepseek/deepseek-v4-flash", "variant": "high" },
+      "observer": { "model": "deepseek/deepseek-v4-flash-vision-exp", "variant": "low" }
     }
   },
   "disabled_agents": []

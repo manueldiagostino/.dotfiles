@@ -44,7 +44,7 @@
 
 # Font options
 font-family = "Maple Mono"
-font-size = 12
+font-size = {{ .fontSize }}
 font-style = "SemiBold"
 font-style-bold = "ExtraBold"
 font-style-italic = "Italic"
@@ -60,8 +60,8 @@ window-width = 80
 window-height = 25
 
 # Add some nice looking padding
-window-padding-x = 2
-window-padding-y = 0
+window-padding-x = {{ .paddingX }}
+window-padding-y = {{ .paddingY }}
 window-padding-balance = true
 window-save-state = always
 background-blur-radius = 90
