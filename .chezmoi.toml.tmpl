@@ -7,10 +7,10 @@
 
 {{- /* Per-machine overrides, keyed by hostname (falls back to $defaults) */ -}}
 {{- $machines := dict
-      "hierophis" (dict "fontSize" 12 "paddingX" 2 "paddingY" 0 "monitor" "eDP-1" "kbLayout" "us")
-      "elaphe" (dict "fontSize" 13 "paddingX" 10 "paddingY" 5 "monitor" "HDMI-A-2" "kbLayout" "us, it")
+      "hierophis" (dict "fontSize" 12 "paddingX" 2 "paddingY" 0 "monitor" "eDP-1" "kbLayout" "it" "cursorSize" 24)
+      "elaphe" (dict "fontSize" 13 "paddingX" 10 "paddingY" 5 "monitor" "HDMI-A-2" "kbLayout" "us, it" "cursorSize" 28)
 -}}
-{{- $defaults := dict "fontSize" 13 "paddingX" 10 "paddingY" 5 "monitor" "eDP-1" -}}
+{{- $defaults := dict "fontSize" 13 "paddingX" 10 "paddingY" 5 "monitor" "eDP-1" "cursorSize" 28 -}}
 {{- $machine := index $machines .chezmoi.hostname -}}
 {{- if not $machine -}}{{- $machine = $defaults -}}{{- end -}}
 {{- if hasKey $machine "kbLayout" -}}{{- $kbLayout = $machine.kbLayout -}}{{- end -}}
@@ -26,3 +26,4 @@ sourceDir = "~/.dotfiles"
     paddingX = {{ $machine.paddingX }}
     paddingY = {{ $machine.paddingY }}
     monitor = {{ $machine.monitor | quote }}
+    cursorSize = {{ $machine.cursorSize }}
