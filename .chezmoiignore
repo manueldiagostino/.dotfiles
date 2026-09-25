@@ -27,6 +27,3 @@ gallery
 # untracked build/vendor artifacts
 .config/opencode/node_modules
 .config/opencode/package-lock.json
-
-# runtime state (mutated by noctalia)
-.local/state/noctalia/settings.toml
