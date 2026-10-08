@@ -14,6 +14,7 @@ return {
       latex = { "tex-fmt" },
       json = { "prettier" },
       rust = { "rustfmt" },
+      java = { "clang-format" },
     },
     default_format_opts = {
       lsp_format = "never",

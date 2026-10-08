@@ -7,7 +7,6 @@ set-option -g prefix C-a
 bind-key C-a send-prefix
 
 set-option -gw xterm-keys on
-set-option -g default-terminal "xterm-256color"
 set -as terminal-features ',ghostty:extkeys'
 set -as terminal-overrides ',ghostty:keys'
 
@@ -16,6 +15,13 @@ set -g mouse on
 set-window-option -g mode-keys vi
 set -s extended-keys on
 set -g extended-keys-format csi-u
+set -g focus-events on
+
+# Metodo "passthrough" (ojroques/nvim-osc52 README): lascia set-clipboard al
+# default (external) e inoltra le sequenze OSC52 (wrap \ePtmux;) di nvim al
+# terminale esterno. Richiede `tmux_passthrough = true` nel plugin.
+# Preferibile con tmux annidati (laptop + server).
+set -g allow-passthrough on
 
 bind-key "s" run-shell "sesh connect \"$(
   sesh list --icons | fzf-tmux -p 80%,70% \

@@ -61,12 +61,7 @@ export EDITOR=nvim
 fpath=(~/.zsh/completions $fpath)
 autoload -U compinit && compinit
 
-omos() {
-  local port
-  port=$(jot -r 1 49152 65535)
-  OPENCODE_PORT="$port" \
-  opencode --port "$port" "$@"
-}
+alias oc=opencode
 
 # >>> oh-my-opencode-slim background subagents >>>
 export OPENCODE_EXPERIMENTAL_BACKGROUND_SUBAGENTS=true
