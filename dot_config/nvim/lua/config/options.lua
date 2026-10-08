@@ -4,6 +4,8 @@
 
 local set = vim.opt
 
+set.clipboard = "unnamedplus"
+
 set.textwidth = 80
 set.colorcolumn = "+1"
 set.columns = 80
