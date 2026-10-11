@@ -144,9 +144,14 @@ hl.config({
 	},
 })
 
+{{- $swipeDir := "vertical" -}}
+{{- if or (eq .barPosition "top") (eq .barPosition "bottom") -}}
+{{- $swipeDir = "horizontal" -}}
+{{- end }}
+
 hl.gesture({
 	fingers = 3,
-	direction = "vertical",
+	direction = "{{ $swipeDir }}",
 	action = "workspace",
 })
 
